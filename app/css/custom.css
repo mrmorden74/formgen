@@ -38,3 +38,14 @@ body {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
+
+.error {
+  color: red;
+}
+
+.form-group-border {
+  border-color: darkblue;
+  border-style: solid;
+  border-radius: 8px;
+  padding: 10px;
+}
