@@ -34,4 +34,13 @@ class UserController extends Controller {
             $this->f3->set('SESSION.user',NULL);
             $this->f3->reroute('/login');        
     }
+    function addUser() {
+        $username = $this->f3->get('POST.username');
+        $password = $this->f3->get('POST.password');
+
+  		$user = new User($this->db);
+		$user->username = 'admin';
+		$user->password = password_hash("admin", PASSWORD_DEFAULT);
+		$user->save();
+
 }
