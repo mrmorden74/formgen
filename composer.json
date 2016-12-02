@@ -1,0 +1,15 @@
+{
+    "name": "mrmorden74/formgen",
+    "description": "Formgenerator",
+    "authors": [
+        {
+            "name": "mrmorden74",
+            "email": "mrmorden74@gmail.com"
+        }
+    ],
+    "require": {
+        "bcosca/fatfree": "3.6.0",
+        "twbs/bootstrap": "v4.0.0-alpha.5",
+        "simple-validator/simple-validator": "dev-master"
+    }
+}
