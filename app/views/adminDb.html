@@ -1,0 +1,26 @@
+<form class="form-horizontal" method="POST" action="/addDb">
+<div class="form-group form-group-border">
+    <h2>Neue Datenbank anlegen/registrieren</h2>   
+    <label for="Server">Server</label>
+    <input type="text" class="form-control" id="Server" name="server" placeholder="Server">
+    <label for="UserName">Benutzername</label>
+    <input type="text" class="form-control" id="UserName" name="username" placeholder="Benutzername">
+    <label for="DbPassword">Passwort</label>
+    <input type="password" class="form-control" id="DbPassword" name="dbpassword" placeholder="Passwort">
+    <label for="DbType">Datenbanktyp</label>    
+    <select class="form-control" name="dbtype" id="DbType">
+        <option>MySql</option>
+        <option disabled>PostgreSQL</option>
+        <option disabled>OCl8</option>
+        <option disabled>SQLite</option>
+        <option disabled>MongoDB</option>
+    </select>
+    <label for="DbName">Datenbankname</label>
+    <input type="text" class="form-control" id="DbName" name="dbname" placeholder="Datenbankname">
+    <repeat group="{{ @validdb }}" value="{{ @error }}">
+        <p class="error">{{ filter_var(trim(@error), FILTER_SANITIZE_STRING) }}</p>
+    </repeat>
+    <br>
+    <button type="submit" class="btn btn-primary">Speichern</button>
+</div>
+</form>

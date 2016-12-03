@@ -14,6 +14,7 @@ class Controller {
     }
     function afterroute() {
         // echo ' - After routing';
+		var_dump($this->f3);
     }
 
 	function __construct() {

@@ -4,8 +4,17 @@
     <div class="col-md-4">
         <p>
         Benutzername: {{ @SESSION.user }}<br>
-        <a href="/logout">logout</a>
+        <a href="/logout">logout</a><br>
+<check if="{{ @SESSION.user=='admin' }}">
+    <true>
+        <span>
+            <a href="/addUser">Benutzer hinzufügen</a><br>
+            <a href="/addDb">Datenbank hinzufügen</a><br>
         </p>
+        </span>
+    </true>
+</check>
     </div>
-</div>    
+</div>   
+    
 </header>

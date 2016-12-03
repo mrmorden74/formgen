@@ -8,8 +8,6 @@
         }
     ],
     "require": {
-        "bcosca/fatfree": "3.6.0",
-        "twbs/bootstrap": "v4.0.0-alpha.5",
-        "simple-validator/simple-validator": "dev-master"
+        
     }
 }

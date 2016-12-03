@@ -1,5 +1,5 @@
 <?php
-require_once ('vendor/autoload.php');
+require_once ('app/lib/base.php');
 
 $f3 = Base::instance();
 

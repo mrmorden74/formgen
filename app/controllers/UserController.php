@@ -1,7 +1,18 @@
 <?php
 
 class UserController extends Controller {
-    function render(){
+   function render(){
+
+		// $user = new User($this->db);
+		 $this->f3->set('name',$this->f3->get('SESSION.user'));
+
+		// $user = $this->f3->get($username);
+        $template=new Template;
+        $this->f3->set('header','header.html');
+        $this->f3->set('content','formBase.html');
+        echo $template->render('base.html');
+    }    
+    function login(){
 
         $template=new Template;
         $this->f3->set('header','blank.html');
@@ -25,6 +36,7 @@ class UserController extends Controller {
 
         if (password_verify($password,$user->password)) {
             $this->f3->set('SESSION.user',$user->username);
+            $this->f3->set('SESSION.type',$user->type);
             $this->f3->reroute('/');
         } else {
             $this->f3->reroute('/login');
