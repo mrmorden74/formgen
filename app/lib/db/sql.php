@@ -484,6 +484,12 @@ class SQL {
 	*	@param $options array
 	**/
 	function __construct($dsn,$user=NULL,$pw=NULL,array $options=NULL) {
+            global $init;
+		if ($dsn === "") {
+			echo 'CONFIG: dsn-'.$dsn.'- user-'.$user.'- pw-'.$pw.'- options-'.$options.'-';
+			$init = 'init';
+			exit;
+		}
 		$fw=\Base::instance();
 		$this->uuid=$fw->hash($this->dsn=$dsn);
 		if (preg_match('/^.+?(?:dbname|database)=(.+?)(?=;|$)/is',$dsn,$parts))
@@ -493,6 +499,7 @@ class SQL {
 		if (isset($parts[0]) && strstr($parts[0],':',TRUE)=='mysql')
 			$options+=[\PDO::MYSQL_ATTR_INIT_COMMAND=>'SET NAMES '.
 				strtolower(str_replace('-','',$fw->get('ENCODING'))).';'];
+				// var_dump($fw);
 		$this->pdo=new \PDO($dsn,$user,$pw,$options);
 		$this->engine=$this->pdo->getattribute(\PDO::ATTR_DRIVER_NAME);
 	}
