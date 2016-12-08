@@ -1,5 +1,6 @@
 <?php
 require_once ('app/lib/base.php');
+include ('app/inc/db_functions.inc.php');
 $f3 = Base::instance();
 $filename = 'config_db.ini';
 
