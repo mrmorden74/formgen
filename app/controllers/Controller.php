@@ -5,6 +5,21 @@ class Controller {
     protected $f3;
     protected $db;
 
+	function initiate($init) {
+		if($this->f3->get('devdb') === null ){
+			$filename = $init;
+
+			if (file_exists($filename)) {
+				echo "Die Datei $filename existiert";
+			} else {
+				echo "Die Datei $filename existiert nicht";
+				$this->f3->reroute('/init');
+				exit;
+			}
+
+		}
+	}
+
     function beforeroute() {
         // echo 'Before routing - ';
 		if($this->f3->get('SESSION.user') === null ){

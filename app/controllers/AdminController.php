@@ -152,5 +152,7 @@ function addDb() {
 		$dbInDbList->save();
         $this->f3->reroute('/');
     }
-
+    function init() {
+        echo 'init';
+    }
 }
