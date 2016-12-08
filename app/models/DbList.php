@@ -18,6 +18,7 @@ class DbList extends DB\SQL\Mapper{
 
     public function getByName($name) {
         $this->load(array('username=?', $name));
+	    return $this->query;
     }
 
 	public function add() {
