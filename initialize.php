@@ -1,3 +1,31 @@
+<?php
+
+ if (isset($_POST['myserver'])) {
+	$handle = fopen("config_db.ini", "w");
+		// devdb = "mysql:host=127.0.0.1;port=3306;dbname=formgen_"
+		// devdbusername = "root"  
+		// devdbpassword = ""
+	$devdb = 'devdb = "'.$_POST['myserver'].';port='.$_POST['port'].';dbname='.$_POST['dbname'].'"'. "\r\n";
+	$devdbusername = 'devdbusername = "'.$_POST['user'].'"'. "\r\n";  
+	$devdbpassword = 'devdbpassword = "'.$_POST['pwd'].'"'. "\r\n";
+	fwrite($handle, '[globals]'."\r\n");
+	fwrite($handle, $devdb);
+	fwrite($handle, $devdbusername);
+	fwrite($handle, $devdbpassword);
+	fclose($handle);
+
+$f3->config('config.ini');
+$f3->config('config_db.ini');
+// $f3->config('config_db_bak.ini');
+$f3->config('routes.ini');
+
+new Session();
+
+$f3->run();
+	
+ } else {
+
+?>
 <!DOCTYPE html>
 <html lang="de">
   <head>
@@ -13,26 +41,6 @@
     <link href="app/css/custom.css" rel="stylesheet">
   </head>
   <body>
-<?php
-
- if (isset($_POST['myserver'])) {
-	echo 'initialize all';
-	$handle = fopen("config_db.ini", "w");
-		// devdb = "mysql:host=127.0.0.1;port=3306;dbname=formgen_"
-		// devdbusername = "root"  
-		// devdbpassword = ""
-		var_dump($_POST);
-	$devdb = 'devdb = "'.$_POST['myserver'].';port='.$_POST['port'].';dbname='.$_POST['dbname'].'"'. "\r\n";
-	$devdbusername = 'devdbusername = "'.$_POST['user'].'"'. "\r\n";  
-	$devdbpassword = 'devdbpassword = "'.$_POST['pwd'].'"'. "\r\n";
-	fwrite($handle, '[globals]'."\r\n");
-	fwrite($handle, $devdb);
-	fwrite($handle, $devdbusername);
-	fwrite($handle, $devdbpassword);
-	fclose($handle);
- } else {
-
-?>
 <div class="container">
   <h2>Vertical (basic) form</h2>
   <form method="POST">
@@ -59,6 +67,7 @@
     <button type="submit" class="btn btn-default">Submit</button>
   </form>
 <?php
+
  }
 ?>
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) 
