@@ -1,19 +1,30 @@
 <?php
+$init_success = false;
+if (isset($_POST['myserver'])) {
+  if($con = create_con($_POST['myserver'],$_POST['user'],$_POST['pwd'])) {
+    if($con = create_db($con,$_POST['dbname'])) {
+      $handle = fopen("config_db.ini", "w");
+        // devdb = "mysql:host=127.0.0.1;port=3306;dbname=formgen_"
+        // devdbusername = "root"  
+        // devdbpassword = ""
+      $devdb = 'devdb = "mysql:host='.$_POST['myserver'].';port='.$_POST['port'].';dbname='.$_POST['dbname'].'"'. "\r\n";
+      $devdbusername = 'devdbusername = "'.$_POST['user'].'"'. "\r\n";  
+      $devdbpassword = 'devdbpassword = "'.$_POST['pwd'].'"'. "\r\n";
+      fwrite($handle, '[globals]'."\r\n");
+      fwrite($handle, $devdb);
+      fwrite($handle, $devdbusername);
+      fwrite($handle, $devdbpassword);
+      fclose($handle);
 
- if (isset($_POST['myserver'])) {
-	$handle = fopen("config_db.ini", "w");
-		// devdb = "mysql:host=127.0.0.1;port=3306;dbname=formgen_"
-		// devdbusername = "root"  
-		// devdbpassword = ""
-	$devdb = 'devdb = "'.$_POST['myserver'].';port='.$_POST['port'].';dbname='.$_POST['dbname'].'"'. "\r\n";
-	$devdbusername = 'devdbusername = "'.$_POST['user'].'"'. "\r\n";  
-	$devdbpassword = 'devdbpassword = "'.$_POST['pwd'].'"'. "\r\n";
-	fwrite($handle, '[globals]'."\r\n");
-	fwrite($handle, $devdb);
-	fwrite($handle, $devdbusername);
-	fwrite($handle, $devdbpassword);
-	fclose($handle);
+      if (init_db_formgen($con)) {
 
+        $init_success = true;
+      }
+    }
+  close_dbcon ($con);
+  }
+}
+if ($init_success)  {
 $f3->config('config.ini');
 $f3->config('config_db.ini');
 // $f3->config('config_db_bak.ini');
@@ -23,7 +34,9 @@ new Session();
 
 $f3->run();
 	
- } else {
+} 
+ 
+if (!$init_success)  {
 
 ?>
 <!DOCTYPE html>
@@ -64,6 +77,7 @@ $f3->run();
       <label for="pwd">Password für Datenbank:</label>
       <input type="password" class="form-control" id="pwd" name="pwd" value="" placeholder="Enter password">
     </div>
+    <p>Alle Daten des Formulargenerators werden in dieser Datenbank abgelegt. <br>Die Datenbank wird wenn Sie nicht existiert automatisch angelegt. Gleichzeitig werden die Benötigten Tabellen erstellt. <br>Per Default werden die Benutzer admin/admin (mit Adminrechten) und user/userpw angelegt. <br>Ändern Sie die Passwörter so bald wie möglich.</p>
     <button type="submit" class="btn btn-default">Submit</button>
   </form>
 <?php
