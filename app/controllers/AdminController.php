@@ -1,6 +1,79 @@
 <?php
 
 class AdminController extends Controller {
+    /**
+    *  Aufruf des Formulars zur Benutzereingabe     
+    *  param $f3	object	fatfree object
+    *  param $id	array	id in der Form von f3
+    *  return rtype	rdescription
+    */    
+    function editUserForm($f3,$id) {
+        $db = new User($this->db);
+        $db->load(array('id=?',$id['id']));
+        $db->copyTo('POST');
+        if(!$db->dry()) {
+            $valid=[];
+            $valid[]= "No data exist!"; 
+        }
+
+        $template=new Template;
+        $this->f3->set('header','header.html');
+        $this->f3->set('content','admin.html');
+        $this->f3->set('admin_tool','adminUserEdit.html');
+        echo $template->render('base.html');
+        var_dump($db);
+ 
+    }
+    function editUser($f3,$id_array) {
+
+        $data = $this->f3->get('POST');
+        var_dump($data);
+        $valid = Validate::is_valid($data, array(
+            'username' => 'required|alpha_numeric',
+            'type' => 'required|contains,admin user'
+        ));
+
+        if ($data['password'] <> $data['password2']) {
+            $valid=[];
+            $valid[]= "The passwords don't match";            
+        }
+
+        if($valid === true) {
+            // continue
+        } else {
+            $this->f3->set('validusr',$valid);;
+            $this->editUserForm($f3,$id); 
+            exit;
+        }
+  		$user = new User($this->db);
+		$user->edit($id_array['id']);
+        $this->f3->reroute('/showUser');
+    }
+    function delUser($f3,$id) {
+        $db = new User($this->db);
+        $db->delete($id['id']);
+        $this->f3->reroute('/showUser');
+    }
+    function showUser(){
+        $db = new User($this->db);
+        $db->all();
+        for ($db->load(); !$db->dry(); $db->next()){
+            $data[] = $db->cast();
+        }
+        $this->f3->set('dataFromDb',$data);
+        // $columns = $projects->schema();
+        if(!$db->dry()) {
+            $valid=[];
+            $valid[]= "No data exist!"; 
+        }
+        $template=new Template;
+        $this->f3->set('header','header.html');
+        $this->f3->set('content','userBase.html');
+        echo $template->render('base.html');
+        // var_dump($db);    
+        // var_dump($data);    
+    }
+    
     function addUserForm(){
 
 		// $user = new User($this->db);
@@ -63,7 +136,7 @@ function addUser() {
 		$user->password = password_hash($password, PASSWORD_DEFAULT);
 		$user->type = $type;
 		$user->save();
-        $this->f3->reroute('/');
+        $this->f3->reroute('/showUser');
     }
 
 function addDb() {

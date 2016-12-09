@@ -70,4 +70,6 @@ function create_folder ($dbname) {
     fclose($fp);
 	return true;
 }
-    
+function update_db ($dbname) {    
+
+}
