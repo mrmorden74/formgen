@@ -16,7 +16,7 @@ class ProjectController extends Controller {
     }
         $this->f3->set('db_list',$db_list);
 
-    $db = new DbList($this->db);
+    $db = new SrvList($this->db);
     $db->all();
     for ($db->load(); !$db->dry(); $db->next()){
         $data[] = $db->cast();
@@ -36,3 +36,39 @@ class ProjectController extends Controller {
         var_dump($data);    
     }   
 }
+
+/*
+    // Überprüfen ob Datenbank existiert
+    // Bei Bedarf Erstellen
+    // Create database
+    $sql = "CREATE DATABASE ".$data['dbname'];
+    if ($conn->query($sql) === TRUE) {
+
+    } else {
+        $valid=[];
+        $valid[]= "Error creating database: " . $conn->errno; 
+        $this->f3->set('validdb',$valid);
+        if ($conn->errno <> '1007') {
+        echo 'test';
+            $this->addDbForm(); 
+            exit;
+        }
+    }
+    $conn->close();        
+    // Ordner mit config erzeugen
+    $path = $this->f3->get('ROOT').'\\formgen\\'.$data['dbname'].'\\config';
+    $chmod = 0777;
+    if(!(is_dir($path) OR is_file($path) OR is_link($path) )) { 
+        echo $path;
+        mkdir ($path,$chmod,true); 
+    } else {
+        $valid=[];
+        $valid[]= "Ordner schon vorhanden"; 
+        $this->f3->set('validdb',$valid);
+        $this->addDbForm(); 
+        exit;
+    } 
+    $fp = fopen($path.'\\dbconfig.csv', 'w');
+    fputcsv($fp, $data);
+    fclose($fp);
+    */

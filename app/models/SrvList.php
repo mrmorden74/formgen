@@ -1,9 +1,9 @@
 <?php
 
-class DbList extends DB\SQL\Mapper{
+class SrvList extends DB\SQL\Mapper{
 
 	public function __construct(DB\SQL $db) {
-	    parent::__construct($db,'dbList');
+	    parent::__construct($db,'srvList');
 	}
 	
 	public function all() {

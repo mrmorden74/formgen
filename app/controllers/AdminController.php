@@ -24,6 +24,23 @@ class AdminController extends Controller {
         var_dump($db);
  
     }
+    function editSrvForm($f3,$id) {
+        $db = new SrvList($this->db);
+        $db->load(array('id=?',$id['id']));
+        $db->copyTo('POST');
+        if(!$db->dry()) {
+            $valid=[];
+            $valid[]= "No data exist!"; 
+        }
+
+        $template=new Template;
+        $this->f3->set('header','header.html');
+        $this->f3->set('content','admin.html');
+        $this->f3->set('admin_tool','adminSrvEdit.html');
+        echo $template->render('base.html');
+        var_dump($db);
+ 
+    }    
     function editUser($f3,$id_array) {
 
         $data = $this->f3->get('POST');
@@ -73,6 +90,25 @@ class AdminController extends Controller {
         // var_dump($db);    
         // var_dump($data);    
     }
+    function showSrv(){
+        $db = new SrvList($this->db);
+        $db->all();
+        for ($db->load(); !$db->dry(); $db->next()){
+            $data[] = $db->cast();
+        }
+        $this->f3->set('dataFromDb',$data);
+        // $columns = $projects->schema();
+        if(!$db->dry()) {
+            $valid=[];
+            $valid[]= "No data exist!"; 
+        }
+        $template=new Template;
+        $this->f3->set('header','header.html');
+        $this->f3->set('content','srvBase.html');
+        echo $template->render('base.html');
+        // var_dump($db);    
+        // var_dump($data);    
+    }
     
     function addUserForm(){
 
@@ -86,7 +122,7 @@ class AdminController extends Controller {
         $this->f3->set('admin_tool','adminUser.html');
         echo $template->render('base.html');
     }
-    function addDbForm(){
+    function addSrvForm(){
 
 		// $user = new User($this->db);
 		 $this->f3->set('name',$this->f3->get('SESSION.user'));
@@ -95,7 +131,7 @@ class AdminController extends Controller {
         $template=new Template;
         $this->f3->set('header','header.html');
         $this->f3->set('content','admin.html');
-        $this->f3->set('admin_tool','adminDb.html');
+        $this->f3->set('admin_tool','adminSrv.html');
         echo $template->render('base.html');
     }
 function addUser() {
@@ -139,19 +175,18 @@ function addUser() {
         $this->f3->reroute('/showUser');
     }
 
-function addDb() {
+function addSrv() {
 
     $data = $this->f3->get('POST');
     $valid = Validate::is_valid($data, array(
         'server' => 'required|alpha_numeric',
+        'srvtype' => 'required',
         'username' => 'required|max_len,100|min_len,4',
-        'dbpassword' => 'max_len,100',
-        'dbtype' => 'required',
-        'dbname' => 'required|alpha_numeric',
+        'password' => 'max_len,100',
     ));
 
-    $dbInDbList = new DbList($this->db);
-    $dbInDbList->getByName($data['dbname']);
+    $dbInDbList = new SrvList($this->db);
+    $dbInDbList->getByName($data['server']);
     if(!$dbInDbList->dry()) {
         $valid=[];
         $valid[]= "Database allready exists"; 
@@ -161,69 +196,34 @@ function addDb() {
         // continue
     } else {
         $this->f3->set('validdb',$valid);;
-        $this->addDbForm(); 
+        $this->addSrvForm(); 
         exit;
     }
     // Verbindung testen
     // Create connection
-    $conn = new mysqli($data['server'], $data['username'], $data['password']);
+    $conn = create_con ($data['server'], $data['username'], $data['password']);
     // Check connection
     if ($conn->connect_error) {
         $valid=[];
         $valid[]= "Connection failed: " . $conn->connect_error; 
         $this->f3->set('validdb',$valid);;
-        $this->addDbForm(); 
+        $this->addSrvForm(); 
         exit;
     } 
-    // Überprüfen ob Datenbank existiert
-    // Bei Bedarf Erstellen
-    // Create database
-    $sql = "CREATE DATABASE ".$data['dbname'];
-    if ($conn->query($sql) === TRUE) {
-
-    } else {
-        $valid=[];
-        $valid[]= "Error creating database: " . $conn->errno; 
-        $this->f3->set('validdb',$valid);
-        if ($conn->errno <> '1007') {
-        echo 'test';
-            $this->addDbForm(); 
-            exit;
-        }
-    }
-    $conn->close();        
-    // Ordner mit config erzeugen
-    $path = $this->f3->get('ROOT').'\\formgen\\'.$data['dbname'].'\\config';
-    $chmod = 0777;
-    if(!(is_dir($path) OR is_file($path) OR is_link($path) )) { 
-        echo $path;
-        mkdir ($path,$chmod,true); 
-    } else {
-        $valid=[];
-        $valid[]= "Ordner schon vorhanden"; 
-        $this->f3->set('validdb',$valid);
-        $this->addDbForm(); 
-        exit;
-    } 
-    $fp = fopen($path.'\\dbconfig.csv', 'w');
-    fputcsv($fp, $data);
-    fclose($fp);
     
         // Datenbank in Datenbankliste eintragen
         $server = $data['server'];
-        $dbname = $data['dbname'];
+        $srvtype = $data['srvtype'];
         $username = $data['username'];
-        $password = $data['dbpassword'];
-        $dbtype = $data['dbtype'];
+        $password = $data['password'];
 
-  		$dbInDbList = new DbList($this->db);
-		$dbInDbList->dbname = $dbname;
+  		$dbInDbList = new SrvList($this->db);
 		$dbInDbList->server = $server;
+		$dbInDbList->srvtype = $srvtype;
 		$dbInDbList->username = $username;
 		$dbInDbList->password = $password; //Plaintext
-		$dbInDbList->dbtype = $dbtype;
 		$dbInDbList->save();
-        $this->f3->reroute('/');
+        $this->f3->reroute('/showSrv');
     }
     function init() {
         echo 'init';

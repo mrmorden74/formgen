@@ -1,0 +1,27 @@
+<div class="container">
+<h2>Datenverbindungen</h2>
+<table class="table table-striped table-bordered">
+  <tr>
+      <th>Server</th>
+      <th>Datenbanktyp</th>
+      <th>Benutzername</th>
+      <th>Passwort</th>
+      <th>bearb.</th>
+      <th>löschen</th>
+  </tr>
+  <tr>
+    <repeat group="{{ @dataFromDb }}" key="{{ @ikey }}" value="{{ @idiv }}">
+    <repeat group="{{ @idiv }}" key="{{ @ikey2 }}" value="{{ @ispan }}">
+        <check if="{{ @ikey2=='server' || @ikey2=='srvtype' || @ikey2=='username' || @ikey2=='password' }}">
+            <td>{{ @ispan }}</td>
+        </check>
+    </repeat>
+    <td><a href="/editSrv/{{ @idiv.id }}"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></a></td>
+    <td><a href="/delSrv/{{ @idiv.id }}"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></a></td>
+  </tr>
+</repeat>
+</table>
+<a href="/addSrv">
+    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Verbindung hinzufügen
+</a>
+</div>
