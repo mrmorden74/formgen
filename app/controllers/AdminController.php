@@ -24,6 +24,7 @@ class AdminController extends Controller {
         var_dump($db);
  
     }
+
     function editSrvForm($f3,$id) {
         $db = new SrvList($this->db);
         $db->load(array('id=?',$id['id']));
@@ -41,8 +42,41 @@ class AdminController extends Controller {
         var_dump($db);
  
     }    
-    function editUser($f3,$id_array) {
 
+    function addPrjForm($f3,$id) {
+        $db = new SrvList($this->db);
+        $db->load(array('id=?',$id['id']));
+        $db->copyTo('POST');
+        if(!$db->dry()) {
+            $valid=[];
+            $valid[]= "No data exist!"; 
+        }
+        if($con = create_con($_POST['server'],$_POST['username'],$_POST['password'])) {
+            if($result = show_db($con)) {
+                while( $row = mysqli_fetch_row( $result ) ){
+                    if (($row[0]!="information_schema") && ($row[0]!="mysql")) {
+                        $dbname = $row[0];
+                        $dbs[$dbname]['dbname'] = $dbname;
+                        $prjs = new Project($this->db);
+                        $prjs->load(array('dbname=?',$dbname));
+                        $prjs->copyTo('POST');
+                        $dbs3[$dbname] = $_POST;
+                    }
+                }
+        $this->f3->set('dbs',$dbs);
+            }
+        }
+        $this->f3->set('dataFromDb',$dbs3);
+        $template=new Template;
+        $this->f3->set('header','header.html');
+        // $this->f3->set('content','adminPrjAdd.html');
+        $this->f3->set('content','admin.html');
+        $this->f3->set('admin_tool','adminPrjAdd.html');
+        echo $template->render('base.html');
+        var_dump($dbs3);
+    }    
+
+    function editUser($f3,$id_array) {
         $data = $this->f3->get('POST');
         var_dump($data);
         $valid = Validate::is_valid($data, array(
@@ -66,11 +100,13 @@ class AdminController extends Controller {
 		$user->edit($id_array['id']);
         $this->f3->reroute('/showUser');
     }
+
     function delUser($f3,$id) {
         $db = new User($this->db);
         $db->delete($id['id']);
         $this->f3->reroute('/showUser');
     }
+
     function showUser(){
         $db = new User($this->db);
         $db->all();
@@ -85,11 +121,12 @@ class AdminController extends Controller {
         }
         $template=new Template;
         $this->f3->set('header','header.html');
-        $this->f3->set('content','userBase.html');
+        $this->f3->set('content','adminUserBase.html');
         echo $template->render('base.html');
         // var_dump($db);    
         // var_dump($data);    
     }
+
     function showSrv(){
         $db = new SrvList($this->db);
         $db->all();
@@ -104,7 +141,8 @@ class AdminController extends Controller {
         }
         $template=new Template;
         $this->f3->set('header','header.html');
-        $this->f3->set('content','srvBase.html');
+        $this->f3->set('content','admin.html');
+        $this->f3->set('admin_tool','adminSrvBase.html');
         echo $template->render('base.html');
         // var_dump($db);    
         // var_dump($data);    
@@ -119,7 +157,7 @@ class AdminController extends Controller {
         $template=new Template;
         $this->f3->set('header','header.html');
         $this->f3->set('content','admin.html');
-        $this->f3->set('admin_tool','adminUser.html');
+        $this->f3->set('admin_tool','adminUserAdd.html');
         echo $template->render('base.html');
     }
     function addSrvForm(){
@@ -131,9 +169,37 @@ class AdminController extends Controller {
         $template=new Template;
         $this->f3->set('header','header.html');
         $this->f3->set('content','admin.html');
-        $this->f3->set('admin_tool','adminSrv.html');
+        $this->f3->set('admin_tool','adminSrvAdd.html');
         echo $template->render('base.html');
     }
+
+function addPrj() {
+        $data = $this->f3->get('POST');
+        $valid = Validate::is_valid($data, array(
+            'dbname' => 'required|alpha_numeric',
+            'projectname' => 'required|alpha_numeric',
+        ));
+
+        if($valid === true) {
+            // continue
+        } else {
+            $this->f3->set('validprj',$valid);
+            $id['id'] = $data['id'];
+            $this->addPrjForm($f3, $id); 
+            exit;
+        }
+
+  		$user = new Project($this->db);
+		$user->srvlist_id = $data['id'];
+		$user->dbname = $data['dbname'];
+		$user->projectname = $data['projectname'];
+		$user->username = $data['username'];
+		$user->password = $data['password'];
+		$user->active = 1;
+		$user->save();
+        $this->f3->reroute('/addPrj/'.$data['id']);
+    }
+
 function addUser() {
 
         $data = $this->f3->get('POST');

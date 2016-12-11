@@ -8,6 +8,7 @@
       <th>Passwort</th>
       <th>bearb.</th>
       <th>löschen</th>
+      <th>Projekt<br>erstellen</th>
   </tr>
   <tr>
     <repeat group="{{ @dataFromDb }}" key="{{ @ikey }}" value="{{ @idiv }}">
@@ -18,6 +19,7 @@
     </repeat>
     <td><a href="/editSrv/{{ @idiv.id }}"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></a></td>
     <td><a href="/delSrv/{{ @idiv.id }}"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></a></td>
+    <td><a href="/addPrj/{{ @idiv.id }}"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></td>
   </tr>
 </repeat>
 </table>

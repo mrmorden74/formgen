@@ -13,7 +13,19 @@ function create_con ($server, $user, $pwd) {
         return false;
     }
 	return $conn;
- } 
+} 
+
+    // Verbindung testen
+    // Create connection
+function show_db ($conn) {
+    $sql="SHOW DATABASES";
+
+    if (!($result=mysqli_query($conn,$sql))) {
+        printf("Error: %s\n", mysqli_error($link));
+        return false;
+    }
+	return $result;
+} 
  
     // Überprüfen ob Datenbank existiert
     // Bei Bedarf Erstellen
