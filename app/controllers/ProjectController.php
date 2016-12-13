@@ -3,26 +3,13 @@
 class ProjectController extends Controller {
    function render(){
 
-    $user = 'root';
-    $pass = '';
-    $server = 'localhost';
-
-    $dbh = new PDO( "mysql:host=$server", $user, $pass );
-    $dbs = $dbh->query( 'SHOW DATABASES' );
-
-    while( ( $db = $dbs->fetchColumn( 0 ) ) !== false )
-    {
-        $db_list[] = $db;
-    }
-        $this->f3->set('db_list',$db_list);
-
-    $db = new SrvList($this->db);
+    $db = new DbList($this->db);
     $db->all();
     for ($db->load(); !$db->dry(); $db->next()){
         $data[] = $db->cast();
     }
     $this->f3->set('dataFromDb',$data);
-    // $columns = $projects->schema();
+
     if(!$db->dry()) {
         $valid=[];
         $valid[]= "No Project exist!"; 

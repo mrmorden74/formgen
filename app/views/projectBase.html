@@ -2,12 +2,9 @@
 
 <table class="table table-striped table-bordered">
   <tr>
-      <th>ID</th>
       <th>Server</th>
-      <th>Benutzername</th>
-      <th>Passwort</th>
-      <th>Datenbanktyp</th>
       <th>Datenbankname</th>
+      <th>Projektname</th>
       <th>Anzahl<br>Tabellen</th>
       <th>Anzahl<br>Formulare</th>
       <th>Projektdaten<br>bearbeiten</th>
@@ -16,16 +13,13 @@
   </tr>
   <tr>
     <repeat group="{{ @dataFromDb }}" key="{{ @ikey }}" value="{{ @idiv }}">
-    <repeat group="{{ @idiv }}" value="{{ @ispan }}">
+    <repeat group="{{ @idiv }}" key="{{ @ikey2 }}" value="{{ @ispan }}">
+      <check if="{{ @ikey2 =='srvlist_id' || @ikey2 =='dbname' || @ikey2 =='projectname'}}">
     <td>{{ @ispan }}</td>
+        </check>
     </repeat>
     <td>0</td>
     <td>0</td>
   </tr>
 </repeat>
-</table>Datnebankliste
-<ul>
-<repeat group="{{ @db_list }}" value="{{ @db }}">
-    <li>{{ @db  }}</li>
-</repeat>
-</ul>
+</table>

@@ -9,18 +9,47 @@
         <th>freischalten</th>
     </tr>
     <repeat group="{{ @dataFromDb }}" key="{{ @key }}" value="{{ @db }}">
-<form class="form-horizontal" method="POST" action="/addPrj">
-    <!--<div class="form-group form-group-border">-->
-    <!--<label for="Server">Server</label>-->
-            <tr>
-            <td><input type="hidden" name="id" value="{{ @POST.id }}">
-            <input type="text" class="form-control" id="DbName" name="dbname" placeholder="Datenbankname" value="{{ @key }}" readonly></td>
-            <td><input type="text" class="form-control" id="PrjName" name="projectname" placeholder="Projektname" value="{{ @db.projectname }}"></td>
-            <td><input type="text" class="form-control" id="AltUser" name="username" placeholder="Benutzername" value="{{ @db.username }}"></td>
-            <td><input type="text" class="form-control" id="AltPw" name="password" placeholder="Passwort" value="{{ @db.password }}"></td>
-            <td><button type="submit" class="btn btn-default" aria-label="Left Align"><span class="glyphicon glyphicon-plus green-symb" aria-hidden="true"></span></button></td>
+<form class="form-horizontal" method="POST" 
+    <check if="{{ @db.projectname == '' }}">
+        action="/addPrj">
+        <false>
+            action="/editPrj">
+        </false>
+    </check>
+        <tr>
+            <td><input type="hidden" name="srvlist_id" value="{{ @srv_id }}">
+                <input type="text" class="form-control" id="DbName" name="dbname" placeholder="Datenbankname" value="{{ @key }}" readonly>
+            </td>
+            <td><input type="text" class="form-control" id="PrjName" name="projectname" placeholder="Projektname" 
+                <check if="{{ @db.projectname != '' }}">
+                    value="{{ @db.projectname }}" readonly
+                </check>
+                >
+            </td>
+            <td><input type="text" class="form-control" id="AltUser" name="username" placeholder="Benutzername" 
+                <check if="{{ @db.projectname != '' }}">
+                    value="{{ @db.username }}" readonly
+                </check>
+                >
+            </td>
+            <td><input type="text" class="form-control" id="AltPw" name="password" placeholder="Passwort" 
+                <check if="{{ @db.projectname != '' }}">
+                    value="{{ @db.password }}" readonly
+                </check>
+                >
+            </td>
+            <td><button type="submit" class="btn btn-default" aria-label="Left Align"><span class="glyphicon 
+                <check if="{{ @db.projectname == '' }}">
+                        glyphicon-plus green-symb" aria-hidden="true"></span></button></form>
+                    <false> glyphicon-pencil green-symb" aria-hidden="true"></span></button></form>
+                        <button class="btn btn-default" aria-label="Left Align">
+                            <a href="/delPrj/{{ @db.id }}/{{ @srv_id }}"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span></a>
+                        </button>
+                    </false>
+                </check>
+            </td>
         </tr>
-</form>
+
     </repeat>
 <form class="form-horizontal" method="POST" action="/addPrj">
                 <tr>

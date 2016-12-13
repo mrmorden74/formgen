@@ -63,7 +63,7 @@ class AdminController extends Controller {
                         $dbs3[$dbname] = $_POST;
                     }
                 }
-        $this->f3->set('dbs',$dbs);
+        $this->f3->set('srv_id',$id['id']);
             }
         }
         $this->f3->set('dataFromDb',$dbs3);
@@ -106,6 +106,12 @@ class AdminController extends Controller {
         $db->delete($id['id']);
         $this->f3->reroute('/showUser');
     }
+    function delPrj($f3,$params) {
+        $db = new Project($this->db);
+        $db->delete($params['id']);
+        // var_dump($params);
+        $this->f3->reroute('/addPrj/'.$params['srvid']);
+    }
 
     function showUser(){
         $db = new User($this->db);
@@ -121,7 +127,8 @@ class AdminController extends Controller {
         }
         $template=new Template;
         $this->f3->set('header','header.html');
-        $this->f3->set('content','adminUserBase.html');
+        $this->f3->set('content','admin.html');
+        $this->f3->set('admin_tool','adminUserBase.html');
         echo $template->render('base.html');
         // var_dump($db);    
         // var_dump($data);    
@@ -190,14 +197,14 @@ function addPrj() {
         }
 
   		$user = new Project($this->db);
-		$user->srvlist_id = $data['id'];
+		$user->srvlist_id = $data['srvlist_id'];
 		$user->dbname = $data['dbname'];
 		$user->projectname = $data['projectname'];
 		$user->username = $data['username'];
 		$user->password = $data['password'];
 		$user->active = 1;
 		$user->save();
-        $this->f3->reroute('/addPrj/'.$data['id']);
+        $this->f3->reroute('/addPrj/'.$data['srvlist_id']);
     }
 
 function addUser() {
