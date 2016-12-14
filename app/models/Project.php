@@ -1,9 +1,9 @@
 <?php
 
 class Project extends DB\SQL\Mapper{
-
-	public function __construct(DB\SQL $db) {
-	    parent::__construct($db,'dbList');
+	private $database;
+	public function __construct(DB\SQL $db,$database) {
+	    parent::__construct($db,$database);
 	}
 	
 	public function all() {

@@ -1,8 +1,8 @@
 <?php
     // Verbindung testen
     // Create connection
-function create_con ($server, $user, $pwd) {
-    $conn = new mysqli($server, $user, $pwd);
+function create_con ($server, $user, $pwd, $port = 3306) {
+    $conn = new mysqli($server, $user, $pwd,null,$port);
     // Check connection
     if ($conn->connect_error) {
         //TODO errorhandling doesn't work'

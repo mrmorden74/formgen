@@ -13,7 +13,7 @@
   </tr>
   <tr>
     <repeat group="{{ @dataFromDb }}" key="{{ @ikey }}" value="{{ @idiv }}">
-    <td>{{ @idiv.srvname }}</td>
+    <td>{{ @idiv.server }}</td>
     <td>{{ @idiv.dbname }}</td>
     <td>{{ @idiv.projectname }}</td>
     <td>0</td>
@@ -23,14 +23,18 @@
 <form class="form-horizontal" method="POST" action="/addPrjUsr">
                 <tr>
             <td>
-              <select class="form-control" name="servername">
+              <select class="form-control" name="srvlist_id">
                   <repeat group="{{ @srvs }}" key="{{ @ikeysrv }}" value="{{ @idivsrv }}">
-              <option value={{ @ikeysrv }}>{{ @idivsrv }}</option>
+              <option value={{ @ikeysrv }}>{{ @idivsrv.server }}</option>
               </select>
             </td>
             <td><input type="text" class="form-control" id="DbName" name="dbname" placeholder="Datenbankname"></td>
-            <td><input type="text" class="form-control" id="PrjName" name="projectname" placeholder="Projektname" ></td>
+            <td><input type="text" class="form-control" id="PrjName" name="projectname" placeholder="Projektname" >
+            </td>
             <td><button type="submit" class="btn btn-default" aria-label="Left Align"><span class="glyphicon glyphicon-plus green-symb" aria-hidden="true"></span></button></td>
         </tr>
 </form>
 </table>
+    <repeat group="{{ @validprj }}" value="{{ @error }}">
+        <p class="error">{{ filter_var(trim(@error), FILTER_SANITIZE_STRING) }}</p>
+    </repeat>

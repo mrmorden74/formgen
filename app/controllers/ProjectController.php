@@ -8,9 +8,8 @@ class ProjectController extends Controller {
     for ($srv->load(); !$srv->dry(); $srv->next()){
         $datasrv[] = $srv->cast();
     }
-
     foreach ($datasrv as $key => $value) {
-        $srvname[$value['id']] = $value['server'];
+        $srvname[$value['id']] = $datasrv[$key];
         $this->f3->set('srvs',$srvname);
     }
 
@@ -19,7 +18,9 @@ class ProjectController extends Controller {
     $count = 0;
     for ($db->load(); !$db->dry(); $db->next()){
         $data[] = $db->cast();
-        $data[$count]['srvname'] = $srvname[$data[$count]['srvlist_id']]; 
+        $data[$count]['server'] = $srvname[$data[$count]['srvlist_id']]['server']; 
+        $data[$count]['username'] = $srvname[$data[$count]['srvlist_id']]['username']; 
+        $data[$count]['password'] = $srvname[$data[$count]['srvlist_id']]['password']; 
         $count ++;
     }
     $this->f3->set('dataFromDb',$data);
@@ -28,7 +29,8 @@ class ProjectController extends Controller {
         $valid=[];
         $valid[]= "No Project exist!"; 
     }
-
+    
+    
         $template=new Template;
         $this->f3->set('header','header.html');
         $this->f3->set('content','projectBase.html');
@@ -36,44 +38,8 @@ class ProjectController extends Controller {
     var_dump($srvname);
     var_dump($data);    
     }   
-}
 
-/*
-    // Überprüfen ob Datenbank existiert
-    // Bei Bedarf Erstellen
-    // Create database
-    $sql = "CREATE DATABASE ".$data['dbname'];
-    if ($conn->query($sql) === TRUE) {
-
-    } else {
-        $valid=[];
-        $valid[]= "Error creating database: " . $conn->errno; 
-        $this->f3->set('validdb',$valid);
-        if ($conn->errno <> '1007') {
-        echo 'test';
-            $this->addDbForm(); 
-            exit;
-        }
-    }
-    $conn->close();        
-    // Ordner mit config erzeugen
-    $path = $this->f3->get('ROOT').'\\formgen\\'.$data['dbname'].'\\config';
-    $chmod = 0777;
-    if(!(is_dir($path) OR is_file($path) OR is_link($path) )) { 
-        echo $path;
-        mkdir ($path,$chmod,true); 
-    } else {
-        $valid=[];
-        $valid[]= "Ordner schon vorhanden"; 
-        $this->f3->set('validdb',$valid);
-        $this->addDbForm(); 
-        exit;
-    } 
-    $fp = fopen($path.'\\dbconfig.csv', 'w');
-    fputcsv($fp, $data);
-    fclose($fp);
-    */
-    function addPrjUSr() {
+    function addPrjUsr() {
         $data = $this->f3->get('POST');
         $valid = Validate::is_valid($data, array(
             'srvlist_id' => 'required|alpha_numeric',
@@ -86,15 +52,33 @@ class ProjectController extends Controller {
         } else {
             $this->f3->set('validprj',$valid);
             $id['id'] = $data['id'];
-            $this->addPrjForm($f3, $id); 
+            $this->render(); 
             exit;
         }
-
-  		$user = new Project($this->db);
-		$user->srvlist_id = $data['srvlist_id'];
-		$user->dbname = $data['dbname'];
-		$user->projectname = $data['projectname'];
-		$user->active = 1;
-		$user->save();
-        $this->f3->reroute('/addPrj/'.$data['srvlist_id']);
+        $srv = new SrvList($this->db);
+        $srv->getById($data['srvlist_id']);
+        if($srv->dry()) {
+            $valid=[];
+            $valid[]= "No login information stored"; 
+            $this->render(); 
+            exit;
+        }
+        if ($conn = create_con ($srv->server, $srv->username, $srv->password)) {
+            // TODO NAchfragen wenn DB schon existiert. Verwenden o. Abbrechen
+            if ($conn = create_db ($conn, $data['dbname'])) {
+                $user = new Project($this->db);
+                $user->srvlist_id = $data['srvlist_id'];
+                $user->dbname = $data['dbname'];
+                $user->projectname = $data['projectname'];
+                $user->active = 1;
+                $user->save();
+                $conn = close_dbcon ($conn);
+                $this->f3->reroute('/');
+            }
+        }
+            $id['id'] = $data['id'];
+            $this->render(); 
+            exit;
     }
+
+}

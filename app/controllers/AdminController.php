@@ -109,8 +109,8 @@ class AdminController extends Controller {
     function delPrj($f3,$params) {
         $db = new Project($this->db);
         $db->delete($params['id']);
-        // var_dump($params);
         $this->f3->reroute('/addPrj/'.$params['srvid']);
+        // TODO Datenbank auch löschen?
     }
 
     function showUser(){
@@ -120,7 +120,6 @@ class AdminController extends Controller {
             $data[] = $db->cast();
         }
         $this->f3->set('dataFromDb',$data);
-        // $columns = $projects->schema();
         if(!$db->dry()) {
             $valid=[];
             $valid[]= "No data exist!"; 
@@ -130,8 +129,6 @@ class AdminController extends Controller {
         $this->f3->set('content','admin.html');
         $this->f3->set('admin_tool','adminUserBase.html');
         echo $template->render('base.html');
-        // var_dump($db);    
-        // var_dump($data);    
     }
 
     function showSrv(){
@@ -141,7 +138,6 @@ class AdminController extends Controller {
             $data[] = $db->cast();
         }
         $this->f3->set('dataFromDb',$data);
-        // $columns = $projects->schema();
         if(!$db->dry()) {
             $valid=[];
             $valid[]= "No data exist!"; 
@@ -253,7 +249,7 @@ function addSrv() {
 
     $data = $this->f3->get('POST');
     $valid = Validate::is_valid($data, array(
-        'server' => 'required|alpha_numeric',
+        'server' => 'required',
         'srvtype' => 'required',
         'username' => 'required|max_len,100|min_len,4',
         'password' => 'max_len,100',
