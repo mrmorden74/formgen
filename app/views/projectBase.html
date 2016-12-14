@@ -13,13 +13,24 @@
   </tr>
   <tr>
     <repeat group="{{ @dataFromDb }}" key="{{ @ikey }}" value="{{ @idiv }}">
-    <repeat group="{{ @idiv }}" key="{{ @ikey2 }}" value="{{ @ispan }}">
-      <check if="{{ @ikey2 =='srvlist_id' || @ikey2 =='dbname' || @ikey2 =='projectname'}}">
-    <td>{{ @ispan }}</td>
-        </check>
-    </repeat>
+    <td>{{ @idiv.srvname }}</td>
+    <td>{{ @idiv.dbname }}</td>
+    <td>{{ @idiv.projectname }}</td>
     <td>0</td>
     <td>0</td>
   </tr>
 </repeat>
+<form class="form-horizontal" method="POST" action="/addPrjUsr">
+                <tr>
+            <td>
+              <select class="form-control" name="servername">
+                  <repeat group="{{ @srvs }}" key="{{ @ikeysrv }}" value="{{ @idivsrv }}">
+              <option value={{ @ikeysrv }}>{{ @idivsrv }}</option>
+              </select>
+            </td>
+            <td><input type="text" class="form-control" id="DbName" name="dbname" placeholder="Datenbankname"></td>
+            <td><input type="text" class="form-control" id="PrjName" name="projectname" placeholder="Projektname" ></td>
+            <td><button type="submit" class="btn btn-default" aria-label="Left Align"><span class="glyphicon glyphicon-plus green-symb" aria-hidden="true"></span></button></td>
+        </tr>
+</form>
 </table>

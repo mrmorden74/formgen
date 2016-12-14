@@ -183,6 +183,7 @@ class AdminController extends Controller {
 function addPrj() {
         $data = $this->f3->get('POST');
         $valid = Validate::is_valid($data, array(
+            'srvlist_id' => 'required|alpha_numeric',
             'dbname' => 'required|alpha_numeric',
             'projectname' => 'required|alpha_numeric',
         ));
