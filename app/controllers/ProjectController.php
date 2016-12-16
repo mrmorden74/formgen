@@ -4,31 +4,33 @@ class ProjectController extends Controller {
    function render() {
 
     $srv = new SrvList($this->db);
-    $srv->all();
-    for ($srv->load(); !$srv->dry(); $srv->next()){
+    for ($srv->all(); !$srv->dry(); $srv->next()){
         $datasrv[] = $srv->cast();
     }
-    foreach ($datasrv as $key => $value) {
-        $srvname[$value['id']] = $datasrv[$key];
-        $this->f3->set('srvs',$srvname);
+    if(count($datasrv)>0) {
+        foreach ($datasrv as $key => $value) {
+            $srvname[$value['id']] = $datasrv[$key];
+            $this->f3->set('srvs',$srvname);
+        }   
     }
-
     $db = new DbList($this->db);
-    $db->all();
     $count = 0;
-    for ($db->load(); !$db->dry(); $db->next()){
-        $data[] = $db->cast();
-        $data[$count]['server'] = $srvname[$data[$count]['srvlist_id']]['server']; 
-        $data[$count]['username'] = $srvname[$data[$count]['srvlist_id']]['username']; 
-        $data[$count]['password'] = $srvname[$data[$count]['srvlist_id']]['password']; 
-        if ($conn = create_con (
-            $data[$count]['server'], 
-            $data[$count]['username'], 
-            $data[$count]['password'])) {
-        $data[$count]['tables'] = show_tables ($conn,$data[$count]['dbname'])->num_rows;
+    $data = [];
+    
+        for ($db->all(); !$db->dry(); $db->next()){
+            $data[] = $db->cast();
+            $data[$count]['server'] = $srvname[$data[$count]['srvlist_id']]['server']; 
+            $data[$count]['username'] = $srvname[$data[$count]['srvlist_id']]['username']; 
+            $data[$count]['password'] = $srvname[$data[$count]['srvlist_id']]['password']; 
+            if ($conn = create_con (
+                $data[$count]['server'], 
+                $data[$count]['username'], 
+                $data[$count]['password'])) {
+            $data[$count]['tables'] = show_tables ($conn,$data[$count]['dbname'])->num_rows ?? 0;
+            }
+            $count ++;
         }
-        $count ++;
-    }
+    
     $this->f3->set('dataFromDb',$data);
 
     if(!$db->dry()) {

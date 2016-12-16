@@ -98,7 +98,8 @@ class AdminController extends Controller {
         }
   		$user = new User($this->db);
 		$user->edit($id_array['id']);
-        $this->f3->reroute('/showUser');
+        var_dump($user);
+        // $this->f3->reroute('/showUser');
     }
 
     function delUser($f3,$id) {
@@ -193,7 +194,7 @@ function addPrj() {
             exit;
         }
 
-  		$user = new Project($this->db);
+  		$user = new DbList($this->db);
 		$user->srvlist_id = $data['srvlist_id'];
 		$user->dbname = $data['dbname'];
 		$user->projectname = $data['projectname'];

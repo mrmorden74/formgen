@@ -77,7 +77,7 @@ if (!$init_success)  {
       <label for="pwd">Password für Datenbank:</label>
       <input type="password" class="form-control" id="pwd" name="pwd" value="" placeholder="Enter password">
     </div>
-    <p>Alle Daten des Formulargenerators werden in dieser Datenbank abgelegt. <br>Die Datenbank wird wenn Sie nicht existiert automatisch angelegt. Gleichzeitig werden die Benötigten Tabellen erstellt. <br>Per Default werden die Benutzer admin/admin (mit Adminrechten) und user/userpw angelegt. <br>Ändern Sie die Passwörter so bald wie möglich.</p>
+    <p>Alle Daten des Formulargenerators werden in dieser Datenbank abgelegt. <br>Die Datenbank wird wenn Sie nicht existiert automatisch angelegt. Gleichzeitig werden die benötigten Tabellen erstellt. <br>Per Default werden die Benutzer admin/admin (mit Adminrechten) und user/userpw angelegt. <br>Ändern Sie die Passwörter so bald wie möglich.</p>
     <button type="submit" class="btn btn-default">Submit</button>
   </form>
 <?php

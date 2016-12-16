@@ -3,7 +3,7 @@
 class SrvList extends DB\SQL\Mapper{
 
 	public function __construct(DB\SQL $db) {
-	    parent::__construct($db,'srvList');
+	    parent::__construct($db,'srvlist');
 	}
 	
 	public function all() {

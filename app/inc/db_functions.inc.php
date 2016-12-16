@@ -2,7 +2,7 @@
     // Verbindung testen
     // Create connection
 function create_con ($server, $user, $pwd, $db = NULL, $port = 3306) {
-    $conn = new mysqli($server, $user, $pwd,$db,$port);
+    $conn = new mysqli($server, $user, $pwd, $db, $port);
     // Check connection
     if ($conn->connect_error) {
         //TODO errorhandling doesn't work'
@@ -21,7 +21,7 @@ function show_db ($conn) {
     $sql="SHOW DATABASES";
 
     if (!($result=mysqli_query($conn,$sql))) {
-        printf("Error: %s\n", mysqli_error($conn));
+        printf("Error1: %s\n", mysqli_error($conn));
         return false;
     }
 	return $result;
@@ -90,16 +90,22 @@ function show_tables ($conn,$dbname = NULL) {
     if (is_null($dbname)) {
         $sql="SELECT database() AS activ_db";
         if (!($resultdb=mysqli_query($conn,$sql)->fetch_row())) {
-            printf("Error: %s\n", mysqli_error($conn));
+            printf("Error2: %s\n", mysqli_error($conn));
             return false;
         }
         $dbname = $resultdb[0];
     }
     $sql="SHOW TABLES FROM ".$dbname;
-    if (!($result=mysqli_query($conn,$sql))->fetch_assoc()) {
+    if (!($result=mysqli_query($conn,$sql))) {
+    echo $dbname;
         // echo $dbname;
-        printf("Error: %s\n", mysqli_error($conn));
-        return false;
+        // printf("Error3: %s\n", mysqli_error($conn));
+        $valid[]= "Error3: ". $result->error; 
+        var_dump ($valid);
+        // $f3->set('validdb',$valid);
+       return false;
     }
-	return $result;
+    $tables = $result->fetch_assoc();
+    echo $tables;
+	return $tables;
 }
