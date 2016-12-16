@@ -9,15 +9,16 @@
       <th>Anzahl<br>Formulare</th>
       <th>Projektdaten<br>bearbeiten</th>
       <th>Formulare<br>bearbeiten</th>
-      <th>Datenbank<br>löschen</th>
   </tr>
   <tr>
     <repeat group="{{ @dataFromDb }}" key="{{ @ikey }}" value="{{ @idiv }}">
     <td>{{ @idiv.server }}</td>
     <td>{{ @idiv.dbname }}</td>
     <td>{{ @idiv.projectname }}</td>
+    <td>{{ @idiv.tables }}</td>
     <td>0</td>
-    <td>0</td>
+    <td><span class="glyphicon glyphicon-pencil green-symb" aria-hidden="true"></td>
+    <td><a href="/showForms/{{ @idiv.srvlist_id }}/{{ @idiv.id }}"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></td>
   </tr>
 </repeat>
 <form class="form-horizontal" method="POST" action="/addPrjUsr">
@@ -31,6 +32,8 @@
             <td><input type="text" class="form-control" id="DbName" name="dbname" placeholder="Datenbankname"></td>
             <td><input type="text" class="form-control" id="PrjName" name="projectname" placeholder="Projektname" >
             </td>
+            <td></td>
+            <td></td>
             <td><button type="submit" class="btn btn-default" aria-label="Left Align"><span class="glyphicon glyphicon-plus green-symb" aria-hidden="true"></span></button></td>
         </tr>
 </form>

@@ -3,7 +3,7 @@
 class DbList extends DB\SQL\Mapper{
 
 	public function __construct(DB\SQL $db) {
-	    parent::__construct($db,'DbList');
+	    parent::__construct($db,'dblist');
 	}
 	
 	public function all() {

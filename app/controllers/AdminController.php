@@ -57,7 +57,7 @@ class AdminController extends Controller {
                     if (($row[0]!="information_schema") && ($row[0]!="mysql")) {
                         $dbname = $row[0];
                         $dbs[$dbname]['dbname'] = $dbname;
-                        $prjs = new Project($this->db);
+                        $prjs = new DbList($this->db);
                         $prjs->load(array('dbname=?',$dbname));
                         $prjs->copyTo('POST');
                         $dbs3[$dbname] = $_POST;

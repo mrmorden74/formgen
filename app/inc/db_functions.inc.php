@@ -1,8 +1,8 @@
 <?php
     // Verbindung testen
     // Create connection
-function create_con ($server, $user, $pwd, $port = 3306) {
-    $conn = new mysqli($server, $user, $pwd,null,$port);
+function create_con ($server, $user, $pwd, $db = NULL, $port = 3306) {
+    $conn = new mysqli($server, $user, $pwd,$db,$port);
     // Check connection
     if ($conn->connect_error) {
         //TODO errorhandling doesn't work'
@@ -21,7 +21,7 @@ function show_db ($conn) {
     $sql="SHOW DATABASES";
 
     if (!($result=mysqli_query($conn,$sql))) {
-        printf("Error: %s\n", mysqli_error($link));
+        printf("Error: %s\n", mysqli_error($conn));
         return false;
     }
 	return $result;
@@ -84,4 +84,22 @@ function create_folder ($dbname) {
 }
 function update_db ($dbname) {    
 
+}
+
+function show_tables ($conn,$dbname = NULL) {
+    if (is_null($dbname)) {
+        $sql="SELECT database() AS activ_db";
+        if (!($resultdb=mysqli_query($conn,$sql)->fetch_row())) {
+            printf("Error: %s\n", mysqli_error($conn));
+            return false;
+        }
+        $dbname = $resultdb[0];
+    }
+    $sql="SHOW TABLES FROM ".$dbname;
+    if (!($result=mysqli_query($conn,$sql))->fetch_assoc()) {
+        // echo $dbname;
+        printf("Error: %s\n", mysqli_error($conn));
+        return false;
+    }
+	return $result;
 }
