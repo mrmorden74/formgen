@@ -98,8 +98,8 @@ class AdminController extends Controller {
         }
   		$user = new User($this->db);
 		$user->edit($id_array['id']);
-        var_dump($user);
-        // $this->f3->reroute('/showUser');
+        // var_dump($user);
+        $this->f3->reroute('/showUser');
     }
 
     function delUser($f3,$id) {

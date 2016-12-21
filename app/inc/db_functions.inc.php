@@ -97,7 +97,7 @@ function show_tables ($conn,$dbname = NULL) {
     }
     $sql="SHOW TABLES FROM ".$dbname;
     if (!($result=mysqli_query($conn,$sql))) {
-    echo $dbname;
+    // echo $dbname;
         // echo $dbname;
         // printf("Error3: %s\n", mysqli_error($conn));
         $valid[]= "Error3: ". $result->error; 
@@ -106,6 +106,6 @@ function show_tables ($conn,$dbname = NULL) {
        return false;
     }
     $tables = $result->fetch_assoc();
-    echo $tables;
-	return $tables;
+    // echo $tables;
+	return $result;
 }
