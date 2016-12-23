@@ -184,22 +184,20 @@ class ProjectController extends Controller {
         $this->f3->reroute('/showFrms/'.$params['srvid'].'/'.$params['dbid']);
     }
     function createFrm ($f3,$params) {
-        var_dump($params);
         $tbl = new TblList($this->db);
         for ($tbl->getById($params['id']); !$tbl->dry(); $tbl->next()){
             $datatbl[] = $tbl->cast();
         }
-        var_dump($datatbl);
+        $formname = $datatbl[0]['formname'];
+        $object[$formname] = $datatbl[0];
         $db = new DbList($this->db);
         for ($db->getById($datatbl[0]['dbid']); !$db->dry(); $db->next()){
             $datadb[] = $db->cast();
         }
-        var_dump($datadb);
         $srv = new SrvList($this->db);
         for ($srv->getById($datadb[0]['srvlist_id']); !$srv->dry(); $srv->next()){
             $datasrv[] = $srv->cast();
         }
-        var_dump($datasrv);
         if ($conn = create_con ($datasrv[0]['server'], $datasrv[0]['username'], $datasrv[0]['password'], $datadb[0]['dbname'])) {
             $sql="SHOW FIELDS FROM ".$datatbl[0]['tablename'];
             // $sql="DESCRIBE ".$datatbl[0]['tablename'];
@@ -209,31 +207,84 @@ class ProjectController extends Controller {
                 exit;
             }
             while ($result->fetch_assoc()) {
-             foreach ($result As $key => $value) {
-                 $columns[$key] = $value;
-             }
-             foreach ($columns As $value) {
-                //  echo $key;
-                 $columnnames[] = $value['Field'];
-             }
+                foreach ($result As $key => $value) {
+                    $columns[$key] = $value;
+                }
+                foreach ($columns As $key => $value) {
+                    //  echo $key;
+                    // var_dump($value);
+                    //  $columnnames[] = $value['Field'];
+                    $object[$formname]['fields'][$value['Field']] = $value;
+                }
             }
-            var_dump($columnnames);
-            var_dump($columns);
+            $sql="select
+                concat(table_name, '.', column_name) as 'foreign key', 
+                concat(referenced_table_name, '.', referenced_column_name) as 'references'
+                    from
+                information_schema.key_column_usage
+                    where
+                referenced_table_name is not null
+                and table_schema = '".$datadb[0]['dbname']."'";
+            if (!($result2=mysqli_query($conn,$sql))) {
+                $valid[]= "Error3: ". $conn->error; 
+                var_dump ($valid);
+                exit;
+            }
+            while ($result2->fetch_assoc()) {
+                foreach ($result2 As $key => $value) {
+                    $foreigntmp[$key] = $value;
+                }
+            }
+            foreach ($foreigntmp As $key => $value) {
+                $foreignsplit = explode(".",$value['foreign key']);
+                $referencesplit = explode(".",$value['references']);
+                $foreign[$foreignsplit[0]]['table'] = $foreignsplit[0];
+                $foreign[$foreignsplit[0]]['field'] = $foreignsplit[1];
+                $foreign[$foreignsplit[0]]['reftable'] = $referencesplit[0];
+                $foreign[$foreignsplit[0]]['reffield'] = $referencesplit[1];
+                if ($foreignsplit[0] == $datatbl[0]['tablename']) {
+                    $object[$formname]['fields'][$foreignsplit[1]]['reference']['reftable'] = $referencesplit[0];
+                    $object[$formname]['fields'][$foreignsplit[1]]['reference']['reffield'] = $referencesplit[1];
+                    
+                    $sql="SHOW FIELDS FROM ".$referencesplit[0];
+                    if (!($resultref=mysqli_query($conn,$sql))) {
+                        $valid[]= "Error3: ". $conn->error; 
+                        var_dump ($valid);
+                        exit;
+                    }
+                    while ($resultref->fetch_assoc()) {
+                        foreach ($resultref As $key => $value) {
+                            $columnsref[$key] = $value;
+                        }
+                        foreach ($columnsref As $key => $value) {
+                            //  echo $key;
+                            // var_dump($value['Field']);
+                            $object[$formname]['fields'][$foreignsplit[1]]['reference']['reffields'][$value['Field']] = $value;
+                            //  $columnnames[] = $value['Field'];
+                            // $object[$formname]['fields'][$value['Field']] = $value;
+                        }
+                    }
+                }
+            }
         $this->f3->set('fields',$columns);
+        $this->f3->set('object',$object);
         $template=new Template;
         $this->f3->set('header','header.html');
         $this->f3->set('content','formFields.html');
         echo $template->render('base.html');
+            ini_set('xdebug.var_display_max_depth', '10');
+            var_dump($object);
+            // var_dump($datatbl);
+            // var_dump($params);
+            // var_dump($datadb);
+            // var_dump($datasrv);
+            // var_dump($columnnames);
+            // var_dump($columns);
+            // var_dump($foreigntmp);
+            // var_dump($foreign);
+            // $sql="SHOW CREATE TABLE ".$datatbl[0]['tablename'];
 
-// SHOW CREATE TABLE tablename;
-/*select
-    concat(table_name, '.', column_name) as 'foreign key',  
-    concat(referenced_table_name, '.', referenced_column_name) as 'references'
-from
-    information_schema.key_column_usage
-where
-    referenced_table_name is not null;
-*/
+
         }
     }
 }
