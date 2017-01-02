@@ -210,13 +210,18 @@ class ProjectController extends Controller {
                 foreach ($result As $key => $value) {
                     $columns[$key] = $value;
                 }
+                $countid=0;
                 foreach ($columns As $key => $value) {
                     //  echo $key;
                     // var_dump($value);
                     //  $columnnames[] = $value['Field'];
                     $object[$formname]['fields'][$value['Field']] = $value;
+                    $object[$formname]['fields'][$value['Field']]['id'] = $countid;
+                    $countid++;
                 }
             }
+            
+            //foreign keys ermittel und $object den Fields hinzufügen
             $sql="select
                 concat(table_name, '.', column_name) as 'foreign key', 
                 concat(referenced_table_name, '.', referenced_column_name) as 'references'
@@ -266,6 +271,33 @@ class ProjectController extends Controller {
                     }
                 }
             }
+            //default wert zusammensetzen
+            // aus Default, Extra (auto_increment) und foreign_key
+            foreach ($object[$formname]['fields'] as $field) {
+                $values[$field['Field']] = $field['Default'];
+                if ($field['Default']) {
+                $object[$formname]['fields'][$field['Field']]['auto'][] = $field['Default'];
+                }
+                if ($field['Extra']) {
+                $object[$formname]['fields'][$field['Field']]['auto'][] = $field['Extra'];
+                }
+                if ($field['reference']) {
+                    foreach ($field As $ref => $value) {
+                        if ($ref='reference' && is_array($value)) {
+                            foreach ($value As $ref2 => $value2) {
+                                if ($ref2='reffields' && is_array($value2)) {
+                                    foreach ($value2 As $ref3 => $value3) {
+                                        // echo $ref3.'<br>';
+                                        $object[$formname]['fields'][$field['Field']]['auto'][] = '['.$ref3.']';
+                            }
+                        }
+                            }
+                        }
+                    }
+                }
+                
+            }
+
         $this->f3->set('fields',$columns);
         $this->f3->set('object',$object);
         $template=new Template;
@@ -287,4 +319,31 @@ class ProjectController extends Controller {
 
         }
     }
+    function saveFrm ($f3,$params) {
+            ini_set('xdebug.var_display_max_depth', '10');
+            var_dump($params);
+    }
+    /*
+    text
+    password
+    radio
+    checkbox
+    color
+    date
+    datetime
+    datetime-local
+    email
+    month
+    number
+    range
+    search
+    tel
+    time
+    url
+    week
+
+
+    reset
+    submit
+    */
 }

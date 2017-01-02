@@ -1,6 +1,27 @@
+    <repeat group="{{ @object }}" key="{{ @titel }}" value="{{ @params }}">
 <div class="container">
-<h2>{{ @dbdata.0.projectname }}</h2>
-<h3>Formularauswahl</h3>
+<h2>{{ @titel }}</h2>
+<h3>Formulardefinition</h3>
+
+    </repeat>
+    <repeat group="{{ @params }}" key="{{ @param }}" value="{{ @value }}">
+            <!--{{ @param }} = {{ @value }} <br>-->
+    </repeat>
+    <br>
+<div>
+  <!-- Nav tabs -->
+  <ul class="nav nav-tabs" role="tablist">
+    <li role="presentation" class="active"><a href="#start" aria-controls="home" role="tab" data-toggle="tab">Grundeinstellungen</a></li>
+    <li role="presentation"><a href="#auto" aria-controls="profile" role="tab" data-toggle="tab">Autowert</a></li>
+    <li role="presentation"><a href="#final" aria-controls="settings" role="tab" data-toggle="tab">Abschluß</a></li>
+  </ul>
+
+  <!-- Tab panes -->
+  <div class="tab-content">
+    <div role="tabpanel" class="tab-pane active" id="start">
+  <!-- Tab panes -->
+
+
 <table class="table table-striped table-bordered">
   <tr>
       <th>Spaltenname</th>
@@ -8,62 +29,83 @@
       <th>Feldtyp</th>
       <th>Pflicht</th>
       <th>Key</th>
-      <th>Autowert</th>
   </tr>
-    <repeat group="{{ @fields }}" key="{{ @key1 }}" value="{{ @field }}">
-<form class="form-horizontal" method="POST" >
+<form class="form-horizontal" method="POST" action="/saveFrm/{{ @params.id }}">
+    <repeat group="{{ @params.fields }}" key="{{ @field }}" value="{{ @fieldspecs }}">
         <tr>
             <td>
-            <input type="text" class="form-control" id="TblName" name="tablename" placeholder="Tabellenname" value="{{ @field.Field }}" readonly>
+            <input type="text" class="form-control" id="TblFldName" name="{{ @fieldspecs.id.tablefieldname }}" placeholder="Tabellenfeldname" value="{{ @field }}" readonly>
             </td>
             <td>
-                <input type="text" class="form-control" id="FieldName" name="fieldname" placeholder="Formularfeldname" 
-                <check if="{{ @field.fieldname != '' }}">
-                    value="{{ @field.fieldname }}" readonly
+                <input type="text" class="form-control" id="FieldName" name="{{ @fieldspecs.id.fieldname }}" placeholder="Formularfeldname" 
+                <check if="{{ @fieldspecs.fieldname != '' }}">
+                    value="{{ @fieldspecs.fieldname }}" readonly
                 </check>
                 >
             </td>
             <td>
-                <input type="text" class="form-control" id="Type" name="Type" placeholder="Typ" value="{{ @field.Type }}" readonly>
+                <input type="text" class="form-control" id="Type" name="{{ @fieldspecs.id }}['Type']" placeholder="Typ" value="{{ @fieldspecs.Type }}" readonly>
             </td>
             <td>
-                <input type="text" class="form-control" id="Null" name="Null" placeholder="YES" value="{{ @field.Null }}" readonly>
+                <div class="checkbox"><label><input type="checkbox"  id="Null" name="{{ @fieldspecs.id.Null }}" value="NO" 
+                    <check if="{{ @fieldspecs.Null == 'NO' or @fieldspecs.Key == 'PRI' or  @fieldspecs.Key == 'UNI' }}">
+                    checked disabled
+                    </check>
+                >Pflicht <br></label></div>
             </td>
             <td>
-                <input type="text" class="form-control" id="Key" name="Key" placeholder="Key" value="{{ @field.Key }}" readonly>
-            </td>
-            <td>
-                <input type="text" class="form-control" id="Default" name="Default" placeholder="Standard" value="{{ @field.Default }}" readonly>
-            </td>
-            <td><button type="submit" class="btn btn-default" aria-label="Left Align"><span class="glyphicon 
-                <check if="{{ @db.formname == '' }}">
-                        glyphicon-plus green-symb" aria-hidden="true"></span></button></form>
-                    <false> glyphicon-pencil green-symb" aria-hidden="true"></span></button></form>
-                        <button class="btn btn-default" aria-label="Left Align">
-                            <a href="/createFrm/{{ @db.id }}"><span class="glyphicon glyphicon-th-list" aria-hidden="true"></span></a>
-                        </button>
-                        <button class="btn btn-default" aria-label="Left Align">
-                            <a href="/delFrm/{{ @db.id }}/{{ @db.dbid }}/{{ @srvdata.0.id }}"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span></a>
-                        </button>
-                    </false>
-                </check>
+                <select class="form-control" name="{{ @fieldspecs.id.Key }}" id ="Key" <check if="{{ @fieldspecs.Key == 'PRI' or  @fieldspecs.Key == 'UNI'}}">disabled</check>>
+                    <option> </option>
+                    <option <check if="{{ @fieldspecs.Key == 'PRI' }}">selected</check>>PRI</option>
+                    <option <check if="{{ @fieldspecs.Key == 'UNI' }}">selected</check>>UNI</option>
+                    <option <check if="{{ @fieldspecs.Key == 'XXMUL' }}">selected</check>>MUL</option>
+                </select>
             </td>
         </tr>
-
     </repeat>
-<form class="form-horizontal" method="POST" action="/addFrm">
-                <tr>
-            <td>
-                <input type="hidden" name="dblist_id" value="{{ @dbdata.0.id }}">
-                <input type="hidden" name="srvlist_id" value="{{ @srvdata.0.id }}">
-                <input type="text" class="form-control" id="TblName" name="tablename" placeholder="Tabellenname"></td>
-            <td><input type="text" class="form-control" id="FrmName" name="formname" placeholder="Formularname" ></td>
-            <td></td>
-            <td></td>
-            <td><button type="submit" class="btn btn-default" aria-label="Left Align"><span class="glyphicon glyphicon-plus green-symb" aria-hidden="true"></span></button></td>
-        </tr>
-</form>
 </table>
-    <repeat group="{{ @validfrm }}" value="{{ @error }}">
+  <!-- Tab panes -->
+</div>
+    <div role="tabpanel" class="tab-pane" id="auto">
+  <!-- Tab panes -->
+<table class="table table-striped table-bordered">
+  <tr>
+      <th>Spaltenname</th>
+      <th>Autowert</th>
+  </tr>
+    <repeat group="{{ @params.fields }}" key="{{ @field }}" value="{{ @fieldspecs }}">
+        <tr>
+            <td>
+                <input type="text" class="form-control" id="TblFldName" name="{{ @fieldspecs.id.tablefieldname }}" placeholder="Tabellenfeldname" value="{{ @field }}" readonly>
+            </td>
+            <td>
+                <select class="form-control" name="{{ @fieldspecs.id.Autowert }}" id ="Autowert" <check if="{{ @fieldspecs.auto == 99 }}">disabled</check>>
+                    <option> </option>
+                    <repeat group="{{ @fieldspecs.auto }}" key="{{ @count }}" value="{{ @options }}">
+                        <option <check if="{{ @count == 0 }}">selected</check>>{{ @options }}</option>
+                    </repeat>
+                </select>
+            </td>
+        </tr>
+    </repeat>
+</table>
+  <!-- Tab panes -->
+</div>
+    <div role="tabpanel" class="tab-pane" id="messages">
+  <!-- Tab panes -->
+
+  <!-- Tab panes -->
+</div>
+    <div role="tabpanel" class="tab-pane" id="final">
+        <button type="submit" class="btn btn-default pull-right" aria-label="Left Align">Speichern</button>
+        </form>
+    </div>
+  </div>
+
+</div>    
+  <!-- Tab panes -->
+
+   <repeat group="{{ @validfrm }}" value="{{ @error }}">
         <p class="error">EROOR {{ filter_var(trim(@error), FILTER_SANITIZE_STRING) }}</p>
-    </repeat></div>
+    </repeat>
+</div>  
