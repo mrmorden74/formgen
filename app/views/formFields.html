@@ -9,6 +9,7 @@
     </repeat>
     <br>
 <div>
+<form class="form-horizontal" method="POST" action="/saveFrm/{{ @params.id }}">    
   <!-- Nav tabs -->
   <ul class="nav nav-tabs" role="tablist">
     <li role="presentation" class="active"><a href="#start" aria-controls="home" role="tab" data-toggle="tab">Grundeinstellungen</a></li>
@@ -30,31 +31,31 @@
       <th>Pflicht</th>
       <th>Key</th>
   </tr>
-<form class="form-horizontal" method="POST" action="/saveFrm/{{ @params.id }}">
+
     <repeat group="{{ @params.fields }}" key="{{ @field }}" value="{{ @fieldspecs }}">
         <tr>
             <td>
-            <input type="text" class="form-control" id="TblFldName" name="{{ @fieldspecs.id.tablefieldname }}" placeholder="Tabellenfeldname" value="{{ @field }}" readonly>
+            <input type="text" class="form-control" id="TblFldName{{ @fieldspecs.id }}" name={{ @fieldspecs.id }}['tablefieldname'] placeholder="Tabellenfeldname" value="{{ @field }}" readonly>
             </td>
             <td>
-                <input type="text" class="form-control" id="FieldName" name="{{ @fieldspecs.id.fieldname }}" placeholder="Formularfeldname" 
+                <input type="text" class="form-control" id="FieldName{{ @fieldspecs.id }}" name={{ @fieldspecs.id }}['fieldname'] placeholder="Formularfeldname" 
                 <check if="{{ @fieldspecs.fieldname != '' }}">
                     value="{{ @fieldspecs.fieldname }}" readonly
                 </check>
                 >
             </td>
             <td>
-                <input type="text" class="form-control" id="Type" name="{{ @fieldspecs.id }}['Type']" placeholder="Typ" value="{{ @fieldspecs.Type }}" readonly>
+                <input type="text" class="form-control" id="Type{{ @fieldspecs.id }}" name="{{ @fieldspecs.id }}['Type']" placeholder="Typ" value="{{ @fieldspecs.Type }}" readonly>
             </td>
             <td>
-                <div class="checkbox"><label><input type="checkbox"  id="Null" name="{{ @fieldspecs.id.Null }}" value="NO" 
+                <div class="checkbox"><label><input type="checkbox"  id="Empty{{ @fieldspecs.id }}" name={{ @fieldspecs.id }}['empty'] value="NO" 
                     <check if="{{ @fieldspecs.Null == 'NO' or @fieldspecs.Key == 'PRI' or  @fieldspecs.Key == 'UNI' }}">
-                    checked disabled
+                    onchange="rescue_checkbox_state('Empty{{ @fieldspecs.id }}')" checked
                     </check>
                 >Pflicht <br></label></div>
             </td>
             <td>
-                <select class="form-control" name="{{ @fieldspecs.id.Key }}" id ="Key" <check if="{{ @fieldspecs.Key == 'PRI' or  @fieldspecs.Key == 'UNI'}}">disabled</check>>
+                <select class="form-control" name={{ @fieldspecs.id }}['Key'] id ="Key{{ @fieldspecs.id }}" <check if="{{ @fieldspecs.Key == 'PRI' or  @fieldspecs.Key == 'UNI'}}"></check> >
                     <option> </option>
                     <option <check if="{{ @fieldspecs.Key == 'PRI' }}">selected</check>>PRI</option>
                     <option <check if="{{ @fieldspecs.Key == 'UNI' }}">selected</check>>UNI</option>
@@ -76,10 +77,10 @@
     <repeat group="{{ @params.fields }}" key="{{ @field }}" value="{{ @fieldspecs }}">
         <tr>
             <td>
-                <input type="text" class="form-control" id="TblFldName" name="{{ @fieldspecs.id.tablefieldname }}" placeholder="Tabellenfeldname" value="{{ @field }}" readonly>
+                <input type="text" class="form-control" id="TblFldName2_{{ @fieldspecs.id }}" name={{ @fieldspecs.id }}['tablefieldname'] placeholder="Tabellenfeldname" value="{{ @field }}" readonly>
             </td>
             <td>
-                <select class="form-control" name="{{ @fieldspecs.id.Autowert }}" id ="Autowert" <check if="{{ @fieldspecs.auto == 99 }}">disabled</check>>
+                <select class="form-control" name={{ @fieldspecs.id }}['Autowert'] id ="Autowert{{ @fieldspecs.id }}" <check if="{{ @fieldspecs.auto == 99 }}">disabled</check>>
                     <option> </option>
                     <repeat group="{{ @fieldspecs.auto }}" key="{{ @count }}" value="{{ @options }}">
                         <option <check if="{{ @count == 0 }}">selected</check>>{{ @options }}</option>
@@ -95,16 +96,36 @@
   <!-- Tab panes -->
 
   <!-- Tab panes -->
-</div>
-    <div role="tabpanel" class="tab-pane" id="final">
-        <button type="submit" class="btn btn-default pull-right" aria-label="Left Align">Speichern</button>
-        </form>
     </div>
-  </div>
+    <div role="tabpanel" class="tab-pane" id="final">
+        <table class="table table-striped table-bordered">
+            <tr>
+                <th>Spaltenname</th>
+                <th>Reihenfolge</th>
+            </tr>
+            <repeat group="{{ @params.fields }}" key="{{ @field }}" value="{{ @fieldspecs }}">
+                <tr>
+                    <td>
+                        <input type="text" class="form-control" id="TblFldName3_{{ @fieldspecs.id }}" name={{ @fieldspecs.id }}['tablefieldname'] placeholder="Tabellenfeldname" value="{{ @field }}" readonly>
+                    </td>
+                    <td>
+                        <select class="form-control" name={{ @fieldspecs.id }}['Reihenfolge'] id ="Sort{{ @fieldspecs.id }}">
+                            <option>-- wählen --</option>
+                            <repeat group="{{ @params.fields }}"  value="{{ @fieldcount }}" counter="{{ @ctr }}"><option>{{ @ctr  }}</option>
+                            </repeat>
+                        </select>
+                    </td>
+                </tr>
+            </repeat>
+        </table>
+        <button type="submit" class="btn btn-default pull-right" aria-label="Left Align">Speichern</button>
+        
+    </div>
+</div>
 
 </div>    
   <!-- Tab panes -->
-
+</form>
    <repeat group="{{ @validfrm }}" value="{{ @error }}">
         <p class="error">EROOR {{ filter_var(trim(@error), FILTER_SANITIZE_STRING) }}</p>
     </repeat>

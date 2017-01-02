@@ -322,6 +322,7 @@ class ProjectController extends Controller {
     function saveFrm ($f3,$params) {
             ini_set('xdebug.var_display_max_depth', '10');
             var_dump($params);
+            var_dump($_POST);
     }
     /*
     text
