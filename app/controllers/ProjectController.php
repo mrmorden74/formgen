@@ -183,6 +183,15 @@ class ProjectController extends Controller {
         $tbl->delete($params['id']);
         $this->f3->reroute('/showFrms/'.$params['srvid'].'/'.$params['dbid']);
     }
+
+    /** 
+    * 
+    *
+    **/
+    function getTblIdFromFrmID($f3,$id) {
+        
+    }
+
     function createFrm ($f3,$params) {
         $tbl = new TblList($this->db);
         for ($tbl->getById($params['id']); !$tbl->dry(); $tbl->next()){
