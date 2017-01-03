@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Erstellungszeit: 10. Dez 2016 um 16:23
+-- Erstellungszeit: 03. Jan 2017 um 07:24
 -- Server-Version: 5.7.14
 -- PHP-Version: 7.0.10
 
@@ -33,6 +33,23 @@ CREATE TABLE `dblist` (
   `username` varchar(55) DEFAULT NULL,
   `password` varchar(55) DEFAULT NULL,
   `projectname` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Daten für Tabelle `dblist`
+--
+
+
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `frmlist`
+--
+
+CREATE TABLE `frmlist` (
+  `id` int(11) NOT NULL,
+  `dblist_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -76,6 +93,11 @@ CREATE TABLE `srvlist` (
   `password` varchar(55) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Daten für Tabelle `srvlist`
+--
+
+
 -- --------------------------------------------------------
 
 --
@@ -86,10 +108,15 @@ CREATE TABLE `tablelist` (
   `id` int(11) NOT NULL,
   `dbid` int(11) NOT NULL,
   `tablename` varchar(255) NOT NULL,
-  `showdb` tinyint(1) NOT NULL,
+  `showdb` tinyint(1) NOT NULL DEFAULT '1',
   `formname` varchar(255) DEFAULT NULL,
-  `formexist` tinyint(1) NOT NULL
+  `formexist` tinyint(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Daten für Tabelle `tablelist`
+--
+
 
 -- --------------------------------------------------------
 
@@ -123,6 +150,12 @@ ALTER TABLE `dblist`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `id` (`id`),
   ADD KEY `fk_dblist_srvlist1_idx` (`srvlist_id`);
+
+--
+-- Indizes für die Tabelle `frmlist`
+--
+ALTER TABLE `frmlist`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indizes für die Tabelle `privilegies`
@@ -168,7 +201,12 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT für Tabelle `dblist`
 --
 ALTER TABLE `dblist`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+--
+-- AUTO_INCREMENT für Tabelle `frmlist`
+--
+ALTER TABLE `frmlist`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT für Tabelle `privilegies`
 --
@@ -178,17 +216,17 @@ ALTER TABLE `privilegies`
 -- AUTO_INCREMENT für Tabelle `srvlist`
 --
 ALTER TABLE `srvlist`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 --
 -- AUTO_INCREMENT für Tabelle `tablelist`
 --
 ALTER TABLE `tablelist`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 --
 -- AUTO_INCREMENT für Tabelle `user`
 --
 ALTER TABLE `user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 --
 -- Constraints der exportierten Tabellen
 --
