@@ -63,23 +63,48 @@ function close_dbcon ($conn) {
     $conn->close();   
 }
 
-function create_folder ($dbname) {
+function create_folder ($root,$data) {
+    var_dump ($data);
     // Ordner mit config erzeugen
-    $path = $f3->get('ROOT').'\\formgen\\'.$dbname.'\\config';
+    $path = $root.'\\formgen\\'.$data['projectname'].'\\config';
     $chmod = 0777;
     if(!(is_dir($path) OR is_file($path) OR is_link($path) )) { 
-        echo $path;
+        // echo $path;
         mkdir ($path,$chmod,true); 
     } else {
-        $valid=[];
-        $valid[]= "Ordner schon vorhanden"; 
-        $f3->set('validdb',$valid);
-        $this->addDbForm(); 
-        return false;
+        // $valid=[];
+        // $valid[]= "Ordner schon vorhanden"; 
+        // $f3->set('validdb',$valid);
+        // $this->addDbForm(); 
+        // return false;
     } 
     $fp = fopen($path.'\\dbconfig.csv', 'w');
     fputcsv($fp, $data);
+    echo $fp;
     fclose($fp);
+	return true;
+}
+function export_file ($filename,$path,$data) {
+    // var_dump ($data);
+    // Ordner mit config erzeugen
+    $chmod = 0777;
+    if(!(is_dir($path) OR is_file($path) OR is_link($path) )) { 
+        // echo $path;
+        mkdir ($path,$chmod,true); 
+    } 
+    // echo 'test';
+    // echo $filename;
+    $fp = fopen($path.'\\'.$filename.'.ser', 'w');
+    $data_serialized = serialize ($data);
+    fwrite($fp, $data_serialized);
+    fclose($fp);
+
+    $fp = fopen($path.'\\'.$filename.'.json', 'w');
+    $data_serialized = json_encode($data,JSON_PRETTY_PRINT);
+    fwrite($fp, $data_serialized);
+    fclose($fp);
+
+
 	return true;
 }
 function update_db ($dbname) {    

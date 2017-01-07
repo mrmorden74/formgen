@@ -12,9 +12,10 @@
 <form class="form-horizontal" method="POST" action="/saveFrm/{{ @params.id }}">    
   <!-- Nav tabs -->
   <ul class="nav nav-tabs" role="tablist">
-    <li role="presentation" class="active"><a href="#start" aria-controls="home" role="tab" data-toggle="tab">Grundeinstellungen</a></li>
-    <li role="presentation"><a href="#auto" aria-controls="profile" role="tab" data-toggle="tab">Autowert</a></li>
-    <li role="presentation"><a href="#final" aria-controls="settings" role="tab" data-toggle="tab">Abschluß</a></li>
+    <li role="presentation" class="active"><a href="#start" aria-controls="Grundeinstellungen" role="tab" data-toggle="tab">Grundeinstellungen</a></li>
+    <li role="presentation"><a href="#auto" aria-controls="Autowert" role="tab" data-toggle="tab">Autowert</a></li>
+    <li role="presentation"><a href="#final" aria-controls="Abschluß" role="tab" data-toggle="tab">Abschluß</a></li>
+    
   </ul>
 
   <!-- Tab panes -->
@@ -25,62 +26,80 @@
 
 <table class="table table-striped table-bordered">
   <tr>
-      <th>Spaltenname</th>
-      <th>Formularfeldname</th>
-      <th>Feldtyp</th>
-      <th>Pflicht</th>
-      <th>Key</th>
+      <th class="col-md-3">Spaltenname</th>
+      <th class="col-md-3">Formularfeldname</th>
+      <th class="col-md-2">Feldtyp</th>
+      <th class="col-md-1">Pflicht</th>
+      <th class="col-md-1">Key</th>
+      <th class="col-md-1">Reihenfolge</th>
+      <th class="col-md-1">Hide</th>
   </tr>
 
     <repeat group="{{ @params.fields }}" key="{{ @field }}" value="{{ @fieldspecs }}">
         <tr>
             <td>
-            <input type="text" class="form-control" id="TblFldName{{ @fieldspecs.id }}" name={{ @fieldspecs.id }}['tablefieldname'] placeholder="Tabellenfeldname" value="{{ @field }}" readonly>
+            <input type="text" class="form-control" id="TblFldName{{ @fieldspecs.id }}" name="{{ @fieldspecs.id }}[tbl_fieldname]" placeholder="Tabellenfeldname" value="{{ @field }}" readonly>
             </td>
             <td>
-                <input type="text" class="form-control" id="FieldName{{ @fieldspecs.id }}" name={{ @fieldspecs.id }}['fieldname'] placeholder="Formularfeldname" 
+                <input type="text" class="form-control" id="FieldName{{ @fieldspecs.id }}" name="{{ @fieldspecs.id }}[fieldname]" placeholder="Formularfeldname" 
                 <check if="{{ @fieldspecs.fieldname != '' }}">
                     value="{{ @fieldspecs.fieldname }}" readonly
                 </check>
                 >
             </td>
             <td>
-                <input type="text" class="form-control" id="Type{{ @fieldspecs.id }}" name="{{ @fieldspecs.id }}['Type']" placeholder="Typ" value="{{ @fieldspecs.Type }}" readonly>
+                <input type="text" class="form-control" id="Type{{ @fieldspecs.id }}" name="{{ @fieldspecs.id }}[type]" placeholder="Typ" value="{{ @fieldspecs.Type }}" readonly>
             </td>
             <td>
-                <div class="checkbox"><label><input type="checkbox"  id="Empty{{ @fieldspecs.id }}" name={{ @fieldspecs.id }}['empty'] value="NO" 
+                <div class="checkbox"><label><input type="checkbox"  id="Empty{{ @fieldspecs.id }}" name="{{ @fieldspecs.id }}[empty]" value="NO" 
                     <check if="{{ @fieldspecs.Null == 'NO' or @fieldspecs.Key == 'PRI' or  @fieldspecs.Key == 'UNI' }}">
                     onchange="rescue_checkbox_state('Empty{{ @fieldspecs.id }}')" checked
                     </check>
                 >Pflicht <br></label></div>
             </td>
             <td>
-                <select class="form-control" name={{ @fieldspecs.id }}['Key'] id ="Key{{ @fieldspecs.id }}" <check if="{{ @fieldspecs.Key == 'PRI' or  @fieldspecs.Key == 'UNI'}}"></check> >
+                <select class="form-control" name="{{ @fieldspecs.id }}[field_key]" id ="Key{{ @fieldspecs.id }}" <check if="{{ @fieldspecs.Key == 'PRI' or  @fieldspecs.Key == 'UNI'}}"></check> >
                     <option> </option>
                     <option <check if="{{ @fieldspecs.Key == 'PRI' }}">selected</check>>PRI</option>
                     <option <check if="{{ @fieldspecs.Key == 'UNI' }}">selected</check>>UNI</option>
                     <option <check if="{{ @fieldspecs.Key == 'XXMUL' }}">selected</check>>MUL</option>
                 </select>
             </td>
+            <td>
+                <select class="form-control" name="{{ @fieldspecs.id }}[sort]" id ="Sort{{ @fieldspecs.id }}">
+                    <option value = "0">auto.</option>
+                    <repeat group="{{ @params.fields }}"  value="{{ @fieldcount }}" counter="{{ @ctr }}"><option>{{ @ctr  }}</option>
+                    </repeat>
+                </select>
+            </td>
+            <td>
+                <div class="checkbox"><label><input type="checkbox"  id="Hide{{ @fieldspecs.id }}" name={{ @fieldspecs.id }}['field_hide'] value="1" 
+                    <check if="{{ @fieldspecs.Null == 'NO' or @fieldspecs.Key == 'PRI' or  @fieldspecs.Key == 'UNI' }}">
+                    onchange="rescue_checkbox_state('Hide{{ @fieldspecs.id }}')"
+                    </check>
+                >ausblenden <br></label></div>
+            </td>
         </tr>
     </repeat>
 </table>
+
   <!-- Tab panes -->
 </div>
     <div role="tabpanel" class="tab-pane" id="auto">
   <!-- Tab panes -->
 <table class="table table-striped table-bordered">
   <tr>
-      <th>Spaltenname</th>
-      <th>Autowert</th>
+      <th class="col-md-3">Spaltenname</th>
+      <th class="col-md-9">Autowertform</th>
+      <th class="col-md-9">Inhalt</th>
   </tr>
     <repeat group="{{ @params.fields }}" key="{{ @field }}" value="{{ @fieldspecs }}">
         <tr>
             <td>
-                <input type="text" class="form-control" id="TblFldName2_{{ @fieldspecs.id }}" name={{ @fieldspecs.id }}['tablefieldname'] placeholder="Tabellenfeldname" value="{{ @field }}" readonly>
+                <input type="text" class="form-control" id="TblFldName2_{{ @fieldspecs.id }}" name="{{ @fieldspecs.id }}[tbl_fieldname]" placeholder="Tabellenfeldname" value="{{ @field }}" readonly>
             </td>
             <td>
-                <select class="form-control" name={{ @fieldspecs.id }}['Autowert'] id ="Autowert{{ @fieldspecs.id }}" <check if="{{ @fieldspecs.auto == 99 }}">disabled</check>>
+                <select class="form-control" name="{{ @fieldspecs.id }}[Autowert]" id ="Autowert{{ @fieldspecs.id }}" <check if="{{ @fieldspecs.auto == 99 }}">disabled</check>>
                     <option> </option>
                     <repeat group="{{ @fieldspecs.auto }}" key="{{ @count }}" value="{{ @options }}">
                         <option <check if="{{ @count == 0 }}">selected</check>>{{ @options }}</option>
@@ -90,6 +109,7 @@
         </tr>
     </repeat>
 </table>
+
   <!-- Tab panes -->
 </div>
     <div role="tabpanel" class="tab-pane" id="messages">
@@ -100,20 +120,16 @@
     <div role="tabpanel" class="tab-pane" id="final">
         <table class="table table-striped table-bordered">
             <tr>
-                <th>Spaltenname</th>
-                <th>Reihenfolge</th>
+                <th class="col-md-3">Spaltenname</th>
+                <th>Eingabeformat</th>
             </tr>
             <repeat group="{{ @params.fields }}" key="{{ @field }}" value="{{ @fieldspecs }}">
                 <tr>
                     <td>
-                        <input type="text" class="form-control" id="TblFldName3_{{ @fieldspecs.id }}" name={{ @fieldspecs.id }}['tablefieldname'] placeholder="Tabellenfeldname" value="{{ @field }}" readonly>
+                        <input type="text" class="form-control" id="TblFldName3_{{ @fieldspecs.id }}" name="{{ @fieldspecs.id }}[tbl_fieldname]" placeholder="Tabellenfeldname" value="{{ @field }}" readonly>
                     </td>
                     <td>
-                        <select class="form-control" name={{ @fieldspecs.id }}['Reihenfolge'] id ="Sort{{ @fieldspecs.id }}">
-                            <option>-- wählen --</option>
-                            <repeat group="{{ @params.fields }}"  value="{{ @fieldcount }}" counter="{{ @ctr }}"><option>{{ @ctr  }}</option>
-                            </repeat>
-                        </select>
+                       
                     </td>
                 </tr>
             </repeat>

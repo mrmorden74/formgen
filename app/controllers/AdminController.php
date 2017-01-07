@@ -73,7 +73,6 @@ class AdminController extends Controller {
         $this->f3->set('content','admin.html');
         $this->f3->set('admin_tool','adminPrjAdd.html');
         echo $template->render('base.html');
-        var_dump($dbs3);
     }    
 
     function editUser($f3,$id_array) {
@@ -108,10 +107,24 @@ class AdminController extends Controller {
         $this->f3->reroute('/showUser');
     }
     function delPrj($f3,$params) {
-        $db = new Project($this->db);
-        $db->delete($params['id']);
+        $db = new DbList($this->db);
+
+  		$frm = new TblList($this->db);
+		for ($frm->load(array('dbid=?',$params['id'])); !$frm->dry(); $frm->next()){
+            $datafrm[] = $frm->cast();
+        }   
+        if (count($datafrm)) {
+            echo "<script type='text/javascript' language='javascript'>\n";
+            echo "box = confirm('Es wurden bereist Formulare zu diesem Projekt ertstellt. Löschen sie diese Bevor sie das Projekt löschen')";
+            // echo "if (box == false) { ";
+            // echo "test";
+            // echo " }";
+            echo "</script>\n";
+        // TODO Datenbankeinträge auch löschen
+        } else {
+            $db->delete($params['id']);
         $this->f3->reroute('/addPrj/'.$params['srvid']);
-        // TODO Datenbank auch löschen?
+        }
     }
 
     function showUser(){
@@ -184,16 +197,14 @@ function addPrj() {
             'dbname' => 'required|alpha_numeric',
             'projectname' => 'required|alpha_numeric',
         ));
-
         if($valid === true) {
             // continue
         } else {
             $this->f3->set('validprj',$valid);
-            $id['id'] = $data['id'];
+            $id['id'] = $data['srvlist_id'];
             $this->addPrjForm($f3, $id); 
             exit;
         }
-
   		$user = new DbList($this->db);
 		$user->srvlist_id = $data['srvlist_id'];
 		$user->dbname = $data['dbname'];
@@ -202,6 +213,23 @@ function addPrj() {
 		$user->password = $data['password'];
 		$user->active = 1;
 		$user->save();
+        $user->load(array('projectname=?',$data['projectname']));
+        for ($user->load(array('projectname=?',$data['projectname'])); !$user->dry(); $user->next()){
+            $datanew[] = $user->cast();
+        }   
+            // var_dump ($data2);
+        $path = $this->f3->get('ROOT');
+        $srv = new SrvList($this->db);
+            for ($srv->getById($data['srvlist_id']); !$srv->dry(); $srv->next()){
+                $datasrv[] = $srv->cast();
+            }
+            $datasrv[0]['dbname'] = $datanew[0]['dbname'];
+            $datasrv[0]['projectname'] = $datanew[0]['projectname'];
+
+            // var_dump ($data);
+            // var_dump ($data2);
+            // var_dump ($datasrv);
+        $create = create_folder($path, $datasrv[0]);
         $this->f3->reroute('/addPrj/'.$data['srvlist_id']);
     }
 

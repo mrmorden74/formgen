@@ -111,7 +111,8 @@ class ProjectController extends Controller {
         }
 
     $tbl = new TblList($this->db);
-    for ($tbl->all(); !$tbl->dry(); $tbl->next()){
+    for ($tbl->load(array('dbid=?',$params['id'])); !$tbl->dry(); $tbl->next()){
+
         $datatbl[] = $tbl->cast();
     }
 
@@ -147,7 +148,6 @@ class ProjectController extends Controller {
         echo $template->render('base.html');
         echo '$tables';
         var_dump($tables);
-        var_dump($tblname);
         var_dump($datatbl);    
     }
 
@@ -184,13 +184,7 @@ class ProjectController extends Controller {
         $this->f3->reroute('/showFrms/'.$params['srvid'].'/'.$params['dbid']);
     }
 
-    /** 
-    * 
-    *
-    **/
-    function getTblIdFromFrmID($f3,$id) {
-        
-    }
+
 
     function createFrm ($f3,$params) {
         $tbl = new TblList($this->db);
@@ -280,8 +274,12 @@ class ProjectController extends Controller {
                     }
                 }
             }
-            //default wert zusammensetzen
-            // aus Default, Extra (auto_increment) und foreign_key
+            /* default wert zusammensetzen
+            TODO: 
+                Autowertform: auto_increment, Fixwert, Von Tabelle ...[Alle Tabellen der TB]
+                Inhalt: auto_increment, Felder zur Tabelle (Java), Wert.
+            aus Default, Extra (auto_increment) und foreign_key
+            */
             foreach ($object[$formname]['fields'] as $field) {
                 $values[$field['Field']] = $field['Default'];
                 if ($field['Default']) {
@@ -314,46 +312,78 @@ class ProjectController extends Controller {
         $this->f3->set('content','formFields.html');
         echo $template->render('base.html');
             ini_set('xdebug.var_display_max_depth', '10');
+            echo '$object';
             var_dump($object);
-            // var_dump($datatbl);
-            // var_dump($params);
-            // var_dump($datadb);
-            // var_dump($datasrv);
-            // var_dump($columnnames);
-            // var_dump($columns);
-            // var_dump($foreigntmp);
-            // var_dump($foreign);
-            // $sql="SHOW CREATE TABLE ".$datatbl[0]['tablename'];
 
+        /* TODO: add Field
+        */
 
         }
     }
+
     function saveFrm ($f3,$params) {
             ini_set('xdebug.var_display_max_depth', '10');
-            var_dump($params);
-            var_dump($_POST);
+        $tbl = new TblList($this->db);
+            for ($tbl->getById($params['id']); !$tbl->dry(); $tbl->next()){
+            $datatbl[] = $tbl->cast();
+            }
+        $db = new DbList($this->db);
+            for ($db->getById($datatbl[0]['dbid']); !$db->dry(); $db->next()){
+            $datadb[] = $db->cast();
+            }
+        $srv = new SrvList($this->db);
+            for ($srv->getById($datadb[0]['srvlist_id']); !$srv->dry(); $srv->next()){
+            $datasrv[] = $srv->cast();
+            }
+        // echo '$datatbl';
+        // var_dump($datatbl);
+        // echo '$datadb';
+        // var_dump($datadb);
+        // echo '$datasrv';
+        // var_dump($datasrv);
+        // echo '$params';
+        // var_dump($params);
+        
+        $data = $this->f3->get('POST');
+        // var_dump($data[0]);
+        $valid = Validate::is_valid($data[0], array(
+            'fieldname' => 'alpha_numeric',
+        ));
+
+        if($valid === true) {
+            // continue
+        } else {
+            $this->f3->set('validfrm',$valid);
+            $id['id'] = $data['id'];
+            // var_dump($valid);
+            // $this->createFrm($f3, $id); 
+            exit;
+        }
+
+  		$form = new FrmList($this->db);
+        foreach ($data As $key => $value) {
+            $form->tbllist_id = $params['id'];
+            $form->field_id = $key;
+            $form->tbl_fieldname = $value['tbl_fieldname'];
+                // if ($value[1] == ''){
+                //     $value[1] = $value[0];
+                // }       
+            $form->fieldname = $value['fieldname'];
+            $form->type = $value['type'];
+            $form->empty = $value['empty'];
+            $form->field_key = $value['field_value'];
+            $form->sort = $value['sort'];
+            $form->autowert = $value['autowert'];
+            $form->field_hide = $value['field_show'];
+            $form->save();
+            $form->reset();
+        }
+        //create and export config
+        
+        $path = $this->f3->get('ROOT');
+        $path .= '\\formgen\\'.$datadb[0]['projectname'];
+        $filename = $datatbl[0]['formname'];
+        export_file ($filename,$path,$data);
+        // $this->f3->reroute('/createFrm/'.$params['id']);
     }
-    /*
-    text
-    password
-    radio
-    checkbox
-    color
-    date
-    datetime
-    datetime-local
-    email
-    month
-    number
-    range
-    search
-    tel
-    time
-    url
-    week
-
-
-    reset
-    submit
-    */
 }
