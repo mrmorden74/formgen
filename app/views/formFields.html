@@ -1,6 +1,7 @@
     <repeat group="{{ @object }}" key="{{ @titel }}" value="{{ @params }}">
 <div class="container">
-<h2>{{ @titel }}</h2>
+<h2><a href="/showFrms/{{ @params.srvlist_id }}/{{ @params.dbid }}">{{ @params.projectname }}</a>
+     - {{ @titel }}</h2>
 <h3>Formulardefinition</h3>
 
     </repeat>
@@ -73,7 +74,7 @@
                 </select>
             </td>
             <td>
-                <div class="checkbox"><label><input type="checkbox"  id="Hide{{ @fieldspecs.id }}" name={{ @fieldspecs.id }}['field_hide'] value="1" 
+                <div class="checkbox"><label><input type="checkbox"  id="Hide{{ @fieldspecs.id }}" name="{{ @fieldspecs.id }}[field_hide]" value="1" 
                     <check if="{{ @fieldspecs.Null == 'NO' or @fieldspecs.Key == 'PRI' or  @fieldspecs.Key == 'UNI' }}">
                     onchange="rescue_checkbox_state('Hide{{ @fieldspecs.id }}')"
                     </check>

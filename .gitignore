@@ -1,4 +1,5 @@
 /vendor
 /tmp
-/formgen/*
 /config_db.ini
+/formgen/*
+!/formgen/Kursverwaltung

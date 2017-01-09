@@ -84,29 +84,44 @@ function create_folder ($root,$data) {
     fclose($fp);
 	return true;
 }
-function export_file ($filename,$path,$data) {
-    // var_dump ($data);
-    // Ordner mit config erzeugen
+/**
+*	Exportiert Daten in ein Textfile. DIe Dtane im File werden überschrieben
+*	@param $filename string Name des Files ohne Endung
+*	@param $path string kompletter Pfad ohne Datei, Ende ohne "\\"
+*	@param $data mixed Inhalt für Textfile
+*	@param $format string Umwandlungsmethode
+*            csv - putcsv - Dateiendung .csv wird erzeugt
+*            ser - serialize - Dateiendung .ser wird erzeugt
+*            json - json_encode(PRETTY) - Dateiendung .json wird erzeugt
+*   @return bool 
+*/
+function export_file ($filename,$path,$data,$format='csv') {
+    // Ordner erzeugen
     $chmod = 0777;
     if(!(is_dir($path) OR is_file($path) OR is_link($path) )) { 
-        // echo $path;
         mkdir ($path,$chmod,true); 
     } 
-    // echo 'test';
-    // echo $filename;
-    $fp = fopen($path.'\\'.$filename.'.ser', 'w');
-    $data_serialized = serialize ($data);
+    //filename und Exportdatenumwandlung
+    switch ($format) {
+        case 'ser':
+            $fp = fopen($path.'\\'.$filename.'.ser', 'w');
+            $data_export = serialize ($data);
+        break;
+        case 'json':
+            $fp = fopen($path.'\\'.$filename.'.json', 'w');
+            $data_serialized = json_encode($data,JSON_PRETTY_PRINT);
+        break;
+        default:
+            # code...
+            break;
+    }
+    //File schreiben und schließen
     fwrite($fp, $data_serialized);
     fclose($fp);
-
-    $fp = fopen($path.'\\'.$filename.'.json', 'w');
-    $data_serialized = json_encode($data,JSON_PRETTY_PRINT);
-    fwrite($fp, $data_serialized);
-    fclose($fp);
-
-
+    // TODO: Errorhandling 
 	return true;
 }
+
 function update_db ($dbname) {    
 
 }

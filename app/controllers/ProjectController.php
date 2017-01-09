@@ -201,6 +201,8 @@ class ProjectController extends Controller {
         for ($srv->getById($datadb[0]['srvlist_id']); !$srv->dry(); $srv->next()){
             $datasrv[] = $srv->cast();
         }
+        $object[$formname]['projectname'] = $datadb[0]['projectname'];
+        $object[$formname]['srvlist_id'] = $datadb[0]['srvlist_id'];
         if ($conn = create_con ($datasrv[0]['server'], $datasrv[0]['username'], $datasrv[0]['password'], $datadb[0]['dbname'])) {
             $sql="SHOW FIELDS FROM ".$datatbl[0]['tablename'];
             // $sql="DESCRIBE ".$datatbl[0]['tablename'];
@@ -223,7 +225,8 @@ class ProjectController extends Controller {
                     $countid++;
                 }
             }
-            
+
+
             //foreign keys ermittel und $object den Fields hinzufügen
             $sql="select
                 concat(table_name, '.', column_name) as 'foreign key', 
@@ -235,7 +238,7 @@ class ProjectController extends Controller {
                 and table_schema = '".$datadb[0]['dbname']."'";
             if (!($result2=mysqli_query($conn,$sql))) {
                 $valid[]= "Error3: ". $conn->error; 
-                var_dump ($valid);
+                // var_dump ($valid);
                 exit;
             }
             while ($result2->fetch_assoc()) {
@@ -304,7 +307,6 @@ class ProjectController extends Controller {
                 }
                 
             }
-
         $this->f3->set('fields',$columns);
         $this->f3->set('object',$object);
         $template=new Template;
@@ -312,6 +314,7 @@ class ProjectController extends Controller {
         $this->f3->set('content','formFields.html');
         echo $template->render('base.html');
             ini_set('xdebug.var_display_max_depth', '10');
+            var_dump($datadb);
             echo '$object';
             var_dump($object);
 
@@ -383,7 +386,8 @@ class ProjectController extends Controller {
         $path = $this->f3->get('ROOT');
         $path .= '\\formgen\\'.$datadb[0]['projectname'];
         $filename = $datatbl[0]['formname'];
-        export_file ($filename,$path,$data);
+        $format = 'json';
+        export_file ($filename,$path,$data,$format);
         // $this->f3->reroute('/createFrm/'.$params['id']);
     }
 }

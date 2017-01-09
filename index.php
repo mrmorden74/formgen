@@ -12,7 +12,6 @@ if (file_exists($filename)) {
 
 $f3->config('config.ini');
 $f3->config('config_db.ini');
-// $f3->config('config_db_bak.ini');
 $f3->config('routes.ini');
 
 new Session();
