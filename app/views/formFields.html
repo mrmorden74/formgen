@@ -146,6 +146,7 @@
   <!-- Tab panes -->
     <script type="text/javascript">
        document.saveForm.tblname.value = "{{ @params.tablename }}";
+       document.saveForm.frmname.value = "{{ @params.formname }}";
     </script>  
 </form>
    <repeat group="{{ @validfrm }}" value="{{ @error }}">
