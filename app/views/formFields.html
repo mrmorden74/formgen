@@ -10,7 +10,9 @@
     </repeat>
     <br>
 <div>
-<form class="form-horizontal" method="POST" action="/saveFrm/{{ @params.id }}">    
+<form name ="saveForm" class="form-horizontal" method="POST" action="/saveFrm/{{ @params.id }}">  
+    <input type="hidden" name="tblname" value="">  
+    <input type="hidden" name="frmname" value="">  
   <!-- Nav tabs -->
   <ul class="nav nav-tabs" role="tablist">
     <li role="presentation" class="active"><a href="#start" aria-controls="Grundeinstellungen" role="tab" data-toggle="tab">Grundeinstellungen</a></li>
@@ -142,8 +144,12 @@
 
 </div>    
   <!-- Tab panes -->
+    <script type="text/javascript">
+       document.saveForm.tblname.value = "{{ @params.tablename }}";
+    </script>  
 </form>
    <repeat group="{{ @validfrm }}" value="{{ @error }}">
-        <p class="error">EROOR {{ filter_var(trim(@error), FILTER_SANITIZE_STRING) }}</p>
+        <p class="error">ERROR {{ filter_var(trim(@error), FILTER_SANITIZE_STRING) }}</p>
     </repeat>
+
 </div>  

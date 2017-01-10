@@ -348,7 +348,7 @@ class ProjectController extends Controller {
         // var_dump($params);
         
         $data = $this->f3->get('POST');
-        // var_dump($data[0]);
+        var_dump($data);
         $valid = Validate::is_valid($data[0], array(
             'fieldname' => 'alpha_numeric',
         ));
@@ -365,6 +365,8 @@ class ProjectController extends Controller {
 
   		$form = new FrmList($this->db);
         foreach ($data As $key => $value) {
+            echo $key.'='.$value.'<br>';
+            if($value) {
             $form->tbllist_id = $params['id'];
             $form->field_id = $key;
             $form->tbl_fieldname = $value['tbl_fieldname'];
@@ -380,6 +382,7 @@ class ProjectController extends Controller {
             $form->field_hide = $value['field_show'];
             $form->save();
             $form->reset();
+            }
         }
         //create and export config
         

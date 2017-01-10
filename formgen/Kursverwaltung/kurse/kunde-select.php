@@ -41,5 +41,4 @@ if ($res->num_rows) {
 	echo 'keine Daten gefunden';
 }
 	echo '<p><a href="index.php?add=1">Kunden hinzufügen</a></p>';
-	echo '<p><a href="../kunden-nibble2/index.php">Kunden hinzufügen (Nibble 2 Form)</a></p>';
 ?>
