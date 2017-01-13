@@ -1,7 +1,7 @@
 <?php
 	// Formularfelder einfügen
     $fieldData = [];
-    $sql = 'SELECT * FROM kunden WHERE kunden_id = '.$_GET['edit'].';';
+    $sql = 'SELECT * FROM '.$formConfigAll['tblname'].' WHERE '.$formConfigAll['primary'].' = '.$_GET['edit'].';';
     $res = $db->query($sql);
     if ($res->num_rows) {
         while ($line = $res->fetch_assoc()) {

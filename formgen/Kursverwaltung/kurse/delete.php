@@ -1,9 +1,9 @@
 <?php
 if (isset($_GET['del']) && isset($_GET['ok'])) {
-    $sql = 'DELETE FROM kunden WHERE kunden_id = '.$_GET['del'].';';
+    $sql = 'DELETE FROM '.$formConfigAll['tblname'].' WHERE '.$formConfigAll['primary'].' = '.$_GET['del'].';';
     $res = $db->query($sql);
     if ($res) {
-        echo 'Kunde wurde gelöscht';
+        echo 'Datensatz wurde gelöscht';
         header('location:index.php');
         exit;
     } elseif ($db->error != '') {
@@ -11,7 +11,7 @@ if (isset($_GET['del']) && isset($_GET['ok'])) {
         echo $errorMsg;
 	}
 } else {
-    $sql = 'SELECT * FROM kunden WHERE kunden_id = '.$_GET['del'].';';
+    $sql = 'SELECT * FROM '.$formConfigAll['tblname'].' WHERE '.$formConfigAll['primary'].' = '.$_GET['del'].';';
     $res = $db->query($sql);
     // var_dump($res);
 
