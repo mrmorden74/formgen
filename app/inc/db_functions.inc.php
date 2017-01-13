@@ -109,15 +109,16 @@ function export_file ($filename,$path,$data,$format='csv') {
         break;
         case 'json':
             $fp = fopen($path.'\\'.$filename.'.json', 'w');
-            $data_serialized = json_encode($data,JSON_PRETTY_PRINT);
+            $data_export = json_encode($data,JSON_PRETTY_PRINT);
         break;
         default:
             # code...
             break;
     }
     //File schreiben und schließen
-    fwrite($fp, $data_serialized);
+    fwrite($fp, $data_export);
     fclose($fp);
+    echo $data_export;
     // TODO: Errorhandling 
 	return true;
 }

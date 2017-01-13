@@ -2,12 +2,15 @@
 // declare(strict_types=1); // Muss die erste Anweisung in einer Datei sein
 // includes
 require_once '../inc/utilities.inc.php';
-require_once '../inc/formconfig.inc.php';
+// require_once '../inc/formconfig.inc.php';
 require_once '../inc/db-connect.inc.php';
 // zur DB verbinden
-$db = connectDB('root', '', 'localhost', 'kurse');
+$db = getConDb();
 
 // Initialisierung
+$titel = getTitel();
+$formConfigAll = getFormConfig($titel);
+$formConfig = $formConfigAll['fields'];
 $isSent = false;
 $isAdded = false;
 $isValid = false;
@@ -76,21 +79,21 @@ if ($isUpdated) {
 }
 
 if (!isset($_GET['add']) && !isset($_GET['del']) && !isset($_GET['edit'])) {
-	include 'kunde-select.php';
+	include 'select.php';
 }
 if (isset($_GET['add'])) {
-	include 'kunde-insert.php';
+	include 'insert.php';
 	}
 if (isset($_GET['del'])) {
-	include 'kunde-delete.php';
+	include 'delete.php';
 	}
 if (isset($_GET['edit'])) {
-	include 'kunde-update.php';
+	include 'update.php';
 	}	
 ?>
 </main>
 	<footer>
-	<a href="html/index.html">Projektdokumentation per Doxygen</a>
+	<!--<a href="html/index.html">Projektdokumentation per Doxygen</a>-->
 	</footer>
 </div>
 </body>

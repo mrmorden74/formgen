@@ -24,4 +24,10 @@ function connectDB(string $user, string $pw, string $host, string $db) : mysqli 
 	// var_dump($mysqli->get_charset()); // nach dem Umsetzen 
 	return $mysqli;
 }
+
+function getConDb() {
+	$string = explode(',', file_get_contents('../config/dbconfig.csv', true));
+	// var_dump ($string);
+ return connectDB($string[3], $string[4], $string[1], $string[5]);
+}
 ?>

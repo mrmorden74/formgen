@@ -365,8 +365,8 @@ class ProjectController extends Controller {
 
   		$form = new FrmList($this->db);
         foreach ($data As $key => $value) {
-            echo $key.'='.$value.'<br>';
-            if($value) {
+            // echo $key.'='.$value.'<br>';
+            if(is_array($value)) {
             $form->tbllist_id = $params['id'];
             $form->field_id = $key;
             $form->tbl_fieldname = $value['tbl_fieldname'];
@@ -385,12 +385,102 @@ class ProjectController extends Controller {
             }
         }
         //create and export config
-        
+        $export['tblname'] = $data['tblname'];
+        $export['frmname'] = $data['frmname'];
+        foreach($data as $key => $value) {
+            if(intval($key) || $key === 0) {
+                // TODO: Variable für Variablennamen zur Codeverkürzung
+                // $field = "export['field']['".$value['tbl_fieldname']."']['fieldType']";
+                // echo $field."<br>";               
+                $export['fields'][$value['tbl_fieldname']]['fieldType'] = $this->setFieldType($value);
+                $export['fields'][$value['tbl_fieldname']]['label'] = $this->setFieldName($value);
+                $export['fields'][$value['tbl_fieldname']]['dbName'] = $value['tbl_fieldname'];
+                $export['fields'][$value['tbl_fieldname']]['dataType'] = $this->setDataType($value);
+                $export['fields'][$value['tbl_fieldname']]['required'] = $this->setRequired($value);
+                $export['fields'][$value['tbl_fieldname']]['placeholder'] = '';
+                $export['fields'][$value['tbl_fieldname']]['preFix'] = '';
+                $export['fields'][$value['tbl_fieldname']]['minVal'] = 0;
+                $export['fields'][$value['tbl_fieldname']]['maxVal'] = 0;
+                $export['fields'][$value['tbl_fieldname']]['formatText'] = '';
+                $export['fields'][$value['tbl_fieldname']]['autoValue'] = $this->setAutoValue($value);
+                $export['fields'][$value['tbl_fieldname']]['edit'] = true;
+            }
+        }
+
         $path = $this->f3->get('ROOT');
-        $path .= '\\formgen\\'.$datadb[0]['projectname'];
+        $path .= '\\formgen\\'.$datadb[0]['projectname'].'\\'.$datatbl[0]['formname'];
         $filename = $datatbl[0]['formname'];
         $format = 'json';
-        export_file ($filename,$path,$data,$format);
+        export_file ($filename,$path,$export,$format);
         // $this->f3->reroute('/createFrm/'.$params['id']);
+    }
+    function setFieldType($data) {
+        // varchar -> text
+        $value = 'text';
+        // int -> number
+        if (stristr($data['type'], 'int')||stristr($data['type'], 'decimal')) {
+            $value = 'number';
+        }
+        // type = date -> Kalender
+        if ($data['type'] == 'date') {
+            $value = 'date';
+        }
+        // bool -> checkbox
+        if ($data['type'] == 'tinyint(1)') {
+            $value = 'checkbox';
+        }
+        // Autowert = [] -> select
+        if (stristr($data['Autowert'], '[')) {
+            $value = 'select';
+        }
+        return $value;
+    }
+    function setDataType($data) {
+        $value = 'text';
+        if (stristr($data['type'], 'int')) {
+            $value = 'number';
+        }
+        if (stristr($data['type'], 'decimal')) {
+            $value = 'float';
+        }
+        // type = date -> Kalender
+        if ($data['type'] == 'date') {
+            $value = 'date';
+        }
+        //email, regex
+        return $value;
+
+    }
+    function setFieldName($data) {
+        $value = $data['fieldname'];
+
+        if ($data['fieldname'] == '') {
+            $value = $data['tbl_fieldname'];
+        }
+        return $value;
+
+    }
+    function setRequired($data) {
+        $value = false;
+        if ($data['empty'] == 'NO') {
+            $value = true;
+        }
+
+        return $value;
+
+    }
+    function setAutoValue($data) {
+        $value = '';
+        if (!stristr($data['Autowert'], '[')) {
+            $value = $data['Autowert'];
+        }
+        return $value;
+    }
+
+    function setXXX($data) {
+        $value = 'text';
+
+        return $value;
+
     }
 }

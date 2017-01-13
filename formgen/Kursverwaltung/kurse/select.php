@@ -1,5 +1,5 @@
 <?php
-$sql = 'SELECT * FROM kunden;';
+$sql = 'SELECT * FROM '.$formConfigAll['tblname'].';';
 $res = $db->query($sql);
 // var_dump($res);
 
@@ -29,10 +29,10 @@ if ($res->num_rows) {
 			echo '<td>',$val,'</td>';
 		}
 	echo '<td>';	
-	echo '<a href="index.php?edit=', $line['kunden_id'], '">edit</a>';
+	echo '<a href="index.php?edit=', $line[$formConfigAll['primary']], '">edit</a>';
 	echo '</td>';	
 	echo '<td>';	
-	echo '<a href="index.php?del=', $line['kunden_id'], '">del</a>';
+	echo '<a href="index.php?del=', $line[$formConfigAll['primary']], '">del</a>';
 	echo '</td>';	
 	echo '</tr>';	
 	}
@@ -40,5 +40,5 @@ if ($res->num_rows) {
 } else {
 	echo 'keine Daten gefunden';
 }
-	echo '<p><a href="index.php?add=1">Kunden hinzufügen</a></p>';
+	echo '<p><a href="index.php?add=1">Datensatz hinzufügen</a></p>';
 ?>

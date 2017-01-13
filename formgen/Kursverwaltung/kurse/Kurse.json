@@ -1,83 +1,133 @@
-[
-    {
-        "tbl_fieldname": "kurse_id",
-        "fieldname": "",
-        "type": "int(11)",
-        "empty": "NO",
-        "field_key": "PRI",
-        "sort": "0",
-        "Autowert": "auto_increment"
-    },
-    {
-        "tbl_fieldname": "kurse_kursnummer",
-        "fieldname": "",
-        "type": "varchar(12)",
-        "empty": "NO",
-        "field_key": "UNI",
-        "sort": "0",
-        "Autowert": ""
-    },
-    {
-        "tbl_fieldname": "kurse_kurstitel",
-        "fieldname": "",
-        "type": "varchar(255)",
-        "empty": "NO",
-        "field_key": "",
-        "sort": "0",
-        "Autowert": ""
-    },
-    {
-        "tbl_fieldname": "kurse_kursbeschreibung",
-        "fieldname": "",
-        "type": "text",
-        "empty": "NO",
-        "field_key": "",
-        "sort": "0",
-        "Autowert": ""
-    },
-    {
-        "tbl_fieldname": "kurse_kursdatum",
-        "fieldname": "",
-        "type": "date",
-        "empty": "NO",
-        "field_key": "",
-        "sort": "0",
-        "Autowert": ""
-    },
-    {
-        "tbl_fieldname": "kurse_teilnehmermin",
-        "fieldname": "",
-        "type": "tinyint(3) unsigned",
-        "empty": "NO",
-        "field_key": "",
-        "sort": "0",
-        "Autowert": "3"
-    },
-    {
-        "tbl_fieldname": "kurse_teilnehmermax",
-        "fieldname": "",
-        "type": "tinyint(3) unsigned",
-        "empty": "NO",
-        "field_key": "",
-        "sort": "0",
-        "Autowert": "10"
-    },
-    {
-        "tbl_fieldname": "raume_raume_id",
-        "fieldname": "",
-        "type": "int(11)",
-        "empty": "NO",
-        "field_key": "",
-        "sort": "0",
-        "Autowert": "[raume_id]"
-    },
-    {
-        "tbl_fieldname": "trainer_trainer_id",
-        "fieldname": "",
-        "type": "int(11)",
-        "empty": "NO",
-        "field_key": "",
-        "sort": "0",
-        "Autowert": "[trainer_id]"
+{
+    "tblname": "kurse",
+    "frmname": "Kurse",
+    "primary": "kurse_id",
+    "fields": {
+        "kurse_id": {
+            "fieldType": "number",
+            "label": "kurse_id",
+            "dbName": "kurse_id",
+            "dataType": "number",
+            "required": true,
+            "placeholder": "",
+            "preFix": "",
+            "minVal": 0,
+            "maxVal": 0,
+            "formatText": "",
+            "autoValue": "auto_increment",
+            "edit": true
+        },
+        "kurse_kursnummer": {
+            "fieldType": "text",
+            "label": "kurse_kursnummer",
+            "dbName": "kurse_kursnummer",
+            "dataType": "text",
+            "required": true,
+            "placeholder": "",
+            "preFix": "",
+            "minVal": 0,
+            "maxVal": 0,
+            "formatText": "",
+            "autoValue": "",
+            "edit": true
+        },
+        "kurse_kurstitel": {
+            "fieldType": "text",
+            "label": "kurse_kurstitel",
+            "dbName": "kurse_kurstitel",
+            "dataType": "text",
+            "required": true,
+            "placeholder": "",
+            "preFix": "",
+            "minVal": 0,
+            "maxVal": 0,
+            "formatText": "",
+            "autoValue": "",
+            "edit": true
+        },
+        "kurse_kursbeschreibung": {
+            "fieldType": "text",
+            "label": "kurse_kursbeschreibung",
+            "dbName": "kurse_kursbeschreibung",
+            "dataType": "text",
+            "required": true,
+            "placeholder": "",
+            "preFix": "",
+            "minVal": 0,
+            "maxVal": 0,
+            "formatText": "",
+            "autoValue": "",
+            "edit": true
+        },
+        "kurse_kursdatum": {
+            "fieldType": "date",
+            "label": "kurse_kursdatum",
+            "dbName": "kurse_kursdatum",
+            "dataType": "date",
+            "required": true,
+            "placeholder": "",
+            "preFix": "",
+            "minVal": 0,
+            "maxVal": 0,
+            "formatText": "",
+            "autoValue": "",
+            "edit": true
+        },
+        "kurse_teilnehmermin": {
+            "fieldType": "number",
+            "label": "kurse_teilnehmermin",
+            "dbName": "kurse_teilnehmermin",
+            "dataType": "number",
+            "required": true,
+            "placeholder": "",
+            "preFix": "",
+            "minVal": 0,
+            "maxVal": 0,
+            "formatText": "",
+            "autoValue": "3",
+            "edit": true
+        },
+        "kurse_teilnehmermax": {
+            "fieldType": "number",
+            "label": "kurse_teilnehmermax",
+            "dbName": "kurse_teilnehmermax",
+            "dataType": "number",
+            "required": true,
+            "placeholder": "",
+            "preFix": "",
+            "minVal": 0,
+            "maxVal": 0,
+            "formatText": "",
+            "autoValue": "10",
+            "edit": true
+        },
+        "raume_raume_id": {
+            "fieldType": "select",
+            "label": "raume_raume_id",
+            "dbName": "raume_raume_id",
+            "dataType": "number",
+            "required": true,
+            "placeholder": "",
+            "preFix": "",
+            "minVal": 0,
+            "maxVal": 0,
+            "formatText": "",
+            "autoValue": "",
+            "edit": true
+        },
+        "trainer_trainer_id": {
+            "fieldType": "select",
+            "label": "trainer_trainer_id",
+            "dbName": "trainer_trainer_id",
+            "dataType": "number",
+            "required": true,
+            "placeholder": "",
+            "preFix": "",
+            "minVal": 0,
+            "maxVal": 0,
+            "formatText": "",
+            "autoValue": "",
+            "edit": true
+        }
     }
-]
+}

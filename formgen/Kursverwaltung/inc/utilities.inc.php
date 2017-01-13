@@ -19,6 +19,16 @@ function getTitel() {
 *	Ordnername wird als Titel ausgelesen
 *   @return string 
 */
+function getFormConfig($titel) {
+	$filename = $titel.'.json';
+	return json_decode(file_get_contents('Kurse.json', true),true);
+	 
+}
+
+/**
+*	Ordnername wird als Titel ausgelesen
+*   @return string 
+*/
 function getLinks() {
 	$dir = dirname(getenv('SCRIPT_FILENAME'));
     if (isset($dir) && is_readable($dir)) { 
@@ -100,7 +110,7 @@ function makeFormFields($conf, $errors, $type) {
 				if ($type == 'update' && isset($fieldConf['preFix'])) {
 					$value = str_replace($fieldConf['preFix'], '' ,$value);
 				}	
-			} elseif (isset($fieldConf['autoValue'])) {
+			} elseif (isset($fieldConf['autoValue']) && $fieldConf['autoValue'] != "") {
 				// autoWert generieren
 				$value = getAutowert($fieldConf['dbName'],$fieldConf['autoValue']); // Fügt bereits eingegeben Wert nach POST ein (unabhängig der Gültigkeit)
 			}
