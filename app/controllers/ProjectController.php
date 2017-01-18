@@ -156,10 +156,9 @@ class ProjectController extends Controller {
         $valid = Validate::is_valid($data, array(
             'dblist_id' => 'required|alpha_numeric',
             'srvlist_id' => 'required|alpha_numeric',
-            'tablename' => 'required|alpha_numeric',
-            'formname' => 'required|alpha_numeric',
+            'tablename' => 'required|alpha_dash',
+            'formname' => 'required|alpha_dash',
         ));
-        echo 'tets';
         if($valid === true) {
             // continue
             // var_dump ($data);
@@ -387,33 +386,45 @@ class ProjectController extends Controller {
         //create and export config
         $export['tblname'] = $data['tblname'];
         $export['frmname'] = $data['frmname'];
+        $export['primary'] = '';
+        
         foreach($data as $key => $value) {
             if(intval($key) || $key === 0) {
                 // TODO: Variable für Variablennamen zur Codeverkürzung
                 // $field = "export['field']['".$value['tbl_fieldname']."']['fieldType']";
-                // echo $field."<br>";               
-                $export['fields'][$value['tbl_fieldname']]['fieldType'] = $this->setFieldType($value);
-                $export['fields'][$value['tbl_fieldname']]['label'] = $this->setFieldName($value);
-                $export['fields'][$value['tbl_fieldname']]['dbName'] = $value['tbl_fieldname'];
-                $export['fields'][$value['tbl_fieldname']]['dataType'] = $this->setDataType($value);
-                $export['fields'][$value['tbl_fieldname']]['required'] = $this->setRequired($value);
-                $export['fields'][$value['tbl_fieldname']]['placeholder'] = '';
-                $export['fields'][$value['tbl_fieldname']]['preFix'] = '';
-                $export['fields'][$value['tbl_fieldname']]['minVal'] = 0;
-                $export['fields'][$value['tbl_fieldname']]['maxVal'] = 0;
-                $export['fields'][$value['tbl_fieldname']]['formatText'] = '';
-                $export['fields'][$value['tbl_fieldname']]['autoValue'] = $this->setAutoValue($value);
-                $export['fields'][$value['tbl_fieldname']]['edit'] = true;
+                // echo $field."<br>";
+                if ($value['field_key']=='PRI') {
+                    $export['primary'] = $value['tbl_fieldname'];
+                }    
+                if ($value['Autowert'] != 'auto_increment') {
+                    $export['fields'][$value['tbl_fieldname']]['fieldType'] = $this->setFieldType($value);
+                    $export['fields'][$value['tbl_fieldname']]['label'] = $this->setFieldName($value);
+                    $export['fields'][$value['tbl_fieldname']]['dbName'] = $value['tbl_fieldname'];
+                    $export['fields'][$value['tbl_fieldname']]['dataType'] = $this->setDataType($value);
+                    $export['fields'][$value['tbl_fieldname']]['required'] = $this->setRequired($value);
+                    $export['fields'][$value['tbl_fieldname']]['placeholder'] = '';
+                    $export['fields'][$value['tbl_fieldname']]['preFix'] = '';
+                    $export['fields'][$value['tbl_fieldname']]['minVal'] = 0;
+                    $export['fields'][$value['tbl_fieldname']]['maxVal'] = 0;
+                    $export['fields'][$value['tbl_fieldname']]['formatText'] = '';
+                    $export['fields'][$value['tbl_fieldname']]['autoValue'] = $this->setAutoValue($value);
+                    $export['fields'][$value['tbl_fieldname']]['edit'] = true;
+                }
             }
         }
 
-        $path = $this->f3->get('ROOT');
-        $path .= '\\formgen\\'.$datadb[0]['projectname'].'\\'.$datatbl[0]['formname'];
+        $root = $this->f3->get('ROOT');
+        $path = $root.'\\formgen\\'.$datadb[0]['projectname'].'\\'.$datatbl[0]['formname'];
         $filename = $datatbl[0]['formname'];
         $format = 'json';
         export_file ($filename,$path,$export,$format);
-        // $this->f3->reroute('/createFrm/'.$params['id']);
+        $source = $root.'\\app\\blueprints\\form';
+        // TODO: wieder aktivieren DEBUG
+        var_dump($_POST);
+        $files = xcopy($source, $path);
+        $this->f3->reroute('/createFrm/'.$params['id']);
     }
+
     function setFieldType($data) {
         // varchar -> text
         $value = 'text';
@@ -430,7 +441,7 @@ class ProjectController extends Controller {
             $value = 'checkbox';
         }
         // Autowert = [] -> select
-        if (stristr($data['Autowert'], '[')) {
+        if (stristr($data['Autowert'][0], '[')) {
             $value = 'select';
         }
         return $value;
@@ -471,8 +482,13 @@ class ProjectController extends Controller {
     }
     function setAutoValue($data) {
         $value = '';
-        if (!stristr($data['Autowert'], '[')) {
+    if (!stristr($data['Autowert'][0], '[')) {
             $value = $data['Autowert'];
+        } else {
+            $value = "[".$data['reference']."]";
+            foreach($data['Autowert'] as $field)  {
+                $value .= ".".$field;
+            }
         }
         return $value;
     }

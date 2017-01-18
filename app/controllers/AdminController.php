@@ -95,7 +95,10 @@ class AdminController extends Controller {
             $this->editUserForm($f3,$id); 
             exit;
         }
-  		$user = new User($this->db);
+        $user = new User($this->db);
+		$user->username = $data['username'];
+		$user->password = password_hash($data['password'], PASSWORD_DEFAULT);
+		$user->type = $data['type'];
 		$user->edit($id_array['id']);
         // var_dump($user);
         $this->f3->reroute('/showUser');
@@ -205,7 +208,10 @@ function addPrj() {
             $this->addPrjForm($f3, $id); 
             exit;
         }
-  		$user = new DbList($this->db);
+  		$pw = $this->f3->hash($data['password']);
+            var_dump ($data);
+            var_dump ($pw);
+        $user = new DbList($this->db);
 		$user->srvlist_id = $data['srvlist_id'];
 		$user->dbname = $data['dbname'];
 		$user->projectname = $data['projectname'];
@@ -225,8 +231,8 @@ function addPrj() {
             }
             $datasrv[0]['dbname'] = $datanew[0]['dbname'];
             $datasrv[0]['projectname'] = $datanew[0]['projectname'];
+            $datasrv[0]['dblist_id'] = $datanew[0]['id'];
 
-            // var_dump ($data);
             // var_dump ($data2);
             // var_dump ($datasrv);
         $create = create_folder($path, $datasrv[0]);
@@ -326,5 +332,23 @@ function addSrv() {
     }
     function init() {
         echo 'init';
+    }
+
+    function editPrj() {
+    $data = $this->f3->get('POST');
+    var_dump($data);
+    var_dump($this->f3->POST['password']);
+
+
+    $token = $this->f3->POST['password'];
+    $encryption_key = $this->f3->get('ENCRYPTION_KEY');
+    $cryptor = new Cryptor($this->f3->get('ENCRYPTION_KEY'));
+    $crypted_token = $cryptor->encrypt($token);
+    unset($token,$encryption_key); 
+
+    $cryptor = new Cryptor($this->f3->get('ENCRYPTION_KEY'));
+    $decrypted_token = $cryptor->decrypt($crypted_token);
+
+    echo $decrypted_token;
     }
 }

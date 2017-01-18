@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Erstellungszeit: 03. Jan 2017 um 07:24
+-- Erstellungszeit: 18. Jan 2017 um 17:23
 -- Server-Version: 5.7.14
 -- PHP-Version: 7.0.10
 
@@ -17,7 +17,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Datenbank: `formgen`
+-- Datenbank: `formgen2`
 --
 
 -- --------------------------------------------------------
@@ -40,7 +40,6 @@ CREATE TABLE `dblist` (
 --
 
 
-
 -- --------------------------------------------------------
 
 --
@@ -49,8 +48,22 @@ CREATE TABLE `dblist` (
 
 CREATE TABLE `frmlist` (
   `id` int(11) NOT NULL,
-  `dblist_id` int(11) NOT NULL
+  `tbllist_id` int(11) NOT NULL,
+  `tbl_fieldname` varchar(55) NOT NULL,
+  `fieldname` varchar(55) DEFAULT NULL,
+  `field_id` int(11) NOT NULL,
+  `type` varchar(25) NOT NULL,
+  `empty` tinyint(1) NOT NULL,
+  `field_key` varchar(10) NOT NULL,
+  `autowert` varchar(255) DEFAULT NULL,
+  `sort` varchar(9) NOT NULL,
+  `field_hide` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Daten für Tabelle `frmlist`
+--
+
 
 -- --------------------------------------------------------
 
@@ -149,13 +162,17 @@ INSERT INTO `user` (`id`, `username`, `password`, `type`) VALUES
 ALTER TABLE `dblist`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `id` (`id`),
+  ADD UNIQUE KEY `srvid_dbname` (`srvlist_id`,`dbname`),
   ADD KEY `fk_dblist_srvlist1_idx` (`srvlist_id`);
 
 --
 -- Indizes für die Tabelle `frmlist`
 --
 ALTER TABLE `frmlist`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `tbl_fieldname` (`tbl_fieldname`),
+  ADD KEY `fieldname` (`fieldname`),
+  ADD KEY `tbllist_id` (`tbllist_id`);
 
 --
 -- Indizes für die Tabelle `privilegies`
@@ -201,12 +218,12 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT für Tabelle `dblist`
 --
 ALTER TABLE `dblist`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=62;
 --
 -- AUTO_INCREMENT für Tabelle `frmlist`
 --
 ALTER TABLE `frmlist`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1758;
 --
 -- AUTO_INCREMENT für Tabelle `privilegies`
 --
@@ -221,7 +238,7 @@ ALTER TABLE `srvlist`
 -- AUTO_INCREMENT für Tabelle `tablelist`
 --
 ALTER TABLE `tablelist`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 --
 -- AUTO_INCREMENT für Tabelle `user`
 --
@@ -236,6 +253,12 @@ ALTER TABLE `user`
 --
 ALTER TABLE `dblist`
   ADD CONSTRAINT `fk_dblist_srvlist1` FOREIGN KEY (`srvlist_id`) REFERENCES `srvlist` (`id`);
+
+--
+-- Constraints der Tabelle `frmlist`
+--
+ALTER TABLE `frmlist`
+  ADD CONSTRAINT `frmlist_ibfk_1` FOREIGN KEY (`tbllist_id`) REFERENCES `tablelist` (`id`);
 
 --
 -- Constraints der Tabelle `privilegies`

@@ -2,4 +2,4 @@
 /tmp
 /config_db.ini
 /formgen/*
-!/formgen/Kursverwaltung
+# !/formgen/Kursverwaltung

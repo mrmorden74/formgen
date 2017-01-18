@@ -5,8 +5,8 @@ require_once '../inc/utilities.inc.php';
 // require_once '../inc/formconfig.inc.php';
 require_once '../inc/db-connect.inc.php';
 // zur DB verbinden
-$db = getConDb();
-
+$dbcon = getConDb();
+$db = connectDB($dbcon['user'], $dbcon['pw'], $dbcon['host'], $dbcon['db']);
 // Initialisierung
 $titel = getTitel();
 $formConfigAll = getFormConfig($titel);
@@ -26,7 +26,7 @@ if ($isSent) {
 	$isValid = validateForm($formConfig, $formErrors);
 	if ($isValid) {
 		if(isset($_POST['button']) && $_POST['button'] == 'insert') {
-			$sql = sql_insert($formConfig);
+			$sql = sql_insert($formConfigAll);
 			$updRes = $db->query($sql);
 			// echo $updRes."-erfolg?";
 			// wurde etwas geändert, geben wir eine Meldung aus und setze hasUpdated auf true
@@ -40,7 +40,7 @@ if ($isSent) {
 			}
 		}
 		if(isset($_POST['button']) && $_POST['button'] == 'update') {
-			$sql = sql_update($formConfig);
+			$sql = sql_update($formConfigAll);
 			$updRes = $db->query($sql);
 			// echo $updRes."-erfolg?";
 			// wurde etwas geändert, geben wir eine Meldung aus und setze hasUpdated auf true
@@ -58,18 +58,20 @@ if ($isSent) {
 <html lang="de">
 <head>
 	<meta charset="UTF-8">
-	<title>Registrierung</title>
-	<link rel="stylesheet" href="../css/pure-min.css">
+	<title><?= $formConfigAll['frmname'] ?></title>
+	<!--<link rel="stylesheet" href="../css/pure-min.css">-->
 	<link rel="stylesheet" href="../css/bootstrap.min.css">
 	<link rel="stylesheet" href="../css/layout.css">
 	<script src="../inc/myScript.js"></script>
 </head>
 <body>
-<div class="wrapper">
+<div class="container">
 	<header class="main-header">
-		<h1>Kunden Verwaltung</h1>
+		<h1><?= $formConfigAll['frmname'] ?></h1>
 	</header>
+</div>
 	<main>
+
 <?php
 if ($isAdded) {
  echo '<p>Datensatz wurde erfolgreich hinzugefügt.</p>' ;
@@ -91,10 +93,13 @@ if (isset($_GET['edit'])) {
 	include 'update.php';
 	}	
 ?>
+
 </main>
-	<footer>
+<footer class="container">
 	<!--<a href="html/index.html">Projektdokumentation per Doxygen</a>-->
-	</footer>
-</div>
+	<a href="../index.php">zum Index</a>
+</footer>
+<script src="../inc/jquery-3.1.1.min.js"></script>
+<script src="../inc/bootstrap.min.js"></script>
 </body>
 </html>

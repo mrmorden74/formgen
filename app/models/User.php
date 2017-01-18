@@ -28,7 +28,8 @@ class User extends DB\SQL\Mapper{
 	public function edit($id) {
 	    $this->load(array('id=?',$id));
 	    $this->copyFrom('POST');
-		$this->password = password_hash($password, PASSWORD_DEFAULT);
+		echo 'TEST'.$this->password;
+		$this->password = password_hash($this->password, PASSWORD_DEFAULT);
 	    $this->update();
 	}
 	

@@ -18,7 +18,7 @@ if (isset($_GET['del']) && isset($_GET['ok'])) {
     //Prüfen ob die Query Einträge geliefert hat
     if ($res->num_rows) {
 
-        echo '<table class="pure-table pure-table-striped">';
+        echo '<div class="container"><table class="table table-striped table-bordered">';
         //Über die Einträge iterieren
         $rowNr = 0;
         while ($line = $res->fetch_assoc()) {
@@ -27,18 +27,11 @@ if (isset($_GET['del']) && isset($_GET['ok'])) {
 
     // Überschrift
 
-            if ($rowNr === 0) {
-                // echo '<thead><tr>'	;
-                foreach($line as $key => $val) {
-                    // echo '<th>',$key,'</th>';
-                }
-                // echo '<th> </th><th> </th></tr></thead><tbody>';	
-                $rowNr = 1;
-            }	
+
     // Datenzeilen erzeugen
                 echo '<tbody>'	;
             foreach($line as $key => $val) {
-                echo '<tr><td>',$key,'</td>';	
+                echo '<tr><td>',dbToLabelName($key, $formConfig),'</td>';	
                 echo '<td>',$val,'</td></tr>';	
             }
         }
@@ -49,5 +42,5 @@ if (isset($_GET['del']) && isset($_GET['ok'])) {
         echo 'keine Daten gefunden';
     }
 }
-	echo '<p><br><br><br><a href="index.php">Zurück zur Übersicht</a></p>';
+	echo '<p><br><a href="index.php">Zurück zur Übersicht</a></p></div>';
 ?>

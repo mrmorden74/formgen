@@ -13,6 +13,7 @@
 <form name ="saveForm" class="form-horizontal" method="POST" action="/saveFrm/{{ @params.id }}">  
     <input type="hidden" name="tblname" value="">  
     <input type="hidden" name="frmname" value="">  
+  
   <!-- Nav tabs -->
   <ul class="nav nav-tabs" role="tablist">
     <li role="presentation" class="active"><a href="#start" aria-controls="Grundeinstellungen" role="tab" data-toggle="tab">Grundeinstellungen</a></li>
@@ -98,14 +99,26 @@
   </tr>
     <repeat group="{{ @params.fields }}" key="{{ @field }}" value="{{ @fieldspecs }}">
         <tr>
-            <td>
+            <input type="hidden" name="{{ @fieldspecs.id }}[reference]" 
+            <check if="{{ @fieldspecs.reference }}">
+            value="[{{ @fieldspecs.reference.reftable }}].[{{ @fieldspecs.reference.reffield }}]"
+            </check>
+            >
+                <td>
                 <input type="text" class="form-control" id="TblFldName2_{{ @fieldspecs.id }}" name="{{ @fieldspecs.id }}[tbl_fieldname]" placeholder="Tabellenfeldname" value="{{ @field }}" readonly>
             </td>
             <td>
-                <select class="form-control" name="{{ @fieldspecs.id }}[Autowert]" id ="Autowert{{ @fieldspecs.id }}" <check if="{{ @fieldspecs.auto == 99 }}">disabled</check>>
+                <select 
+                    <check if="{{ @fieldspecs.reference }}">multiple</check>
+                    class="form-control" 
+                    name="{{ @fieldspecs.id }}[Autowert]<check if="{{ @fieldspecs.reference }}">[]</check>"
+                    id ="Autowert{{ @fieldspecs.id }}" <check if="{{ @fieldspecs.auto == 99 }}">disabled</check>>
                     <option> </option>
                     <repeat group="{{ @fieldspecs.auto }}" key="{{ @count }}" value="{{ @options }}">
-                        <option <check if="{{ @count == 0 }}">selected</check>>{{ @options }}</option>
+                        <option 
+                            <check if="{{ @count == 0 }}">selected</check> 
+                            <check if="{{ @fieldspecs.reference }}"> value = "{{ @options }}"</check>
+                        >{{ @options }}</option>
                     </repeat>
                 </select>
             </td>
@@ -147,6 +160,8 @@
     <script type="text/javascript">
        document.saveForm.tblname.value = "{{ @params.tablename }}";
        document.saveForm.frmname.value = "{{ @params.formname }}";
+    //    var elements = document.getElementsByName(1['reference']);
+    //    elements.value = "{{ @fieldspecs.reference.reftable }}";
     </script>  
 </form>
    <repeat group="{{ @validfrm }}" value="{{ @error }}">

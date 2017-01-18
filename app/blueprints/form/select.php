@@ -5,8 +5,8 @@ $res = $db->query($sql);
 
 //Prüfen ob die Query Einträge geliefert hat
 if ($res->num_rows) {
-
-	echo '<table class="pure-table pure-table-striped">';
+	echo '<div class="table-responsive">';
+	echo '<table class="table table-striped table-bordered">';
 	//Über die Einträge iterieren
 	$rowNr = 0;
 	while ($line = $res->fetch_assoc()) {
@@ -29,14 +29,14 @@ if ($res->num_rows) {
 			echo '<td>',$val,'</td>';
 		}
 	echo '<td>';	
-	echo '<a href="index.php?edit=', $line[$formConfigAll['primary']], '">edit</a>';
+	echo '<a href="index.php?edit=', $line[$formConfigAll['primary']], '"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></a>';
 	echo '</td>';	
 	echo '<td>';	
-	echo '<a href="index.php?del=', $line[$formConfigAll['primary']], '">del</a>';
+	echo '<a href="index.php?del=', $line[$formConfigAll['primary']], '"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></a>';
 	echo '</td>';	
 	echo '</tr>';	
 	}
-	echo '</tbody></table>';
+	echo '</tbody></table></div>';
 } else {
 	echo 'keine Daten gefunden';
 }
