@@ -22,10 +22,11 @@ class ProjectController extends Controller {
             $data[$count]['server'] = $srvname[$data[$count]['srvlist_id']]['server']; 
             $data[$count]['username'] = $srvname[$data[$count]['srvlist_id']]['username']; 
             $data[$count]['password'] = $srvname[$data[$count]['srvlist_id']]['password']; 
+            $pw = $this->decrypt($data[$count]['password']);
             if ($conn = create_con (
                 $data[$count]['server'], 
                 $data[$count]['username'], 
-                $data[$count]['password'])) {
+                $pw)) {
             $data[$count]['tables'] = show_tables ($conn,$data[$count]['dbname'])->num_rows ?? 0;
             }
             $count ++;
@@ -127,8 +128,9 @@ class ProjectController extends Controller {
         $this->f3->set('dbdata',$datadb);
         $this->f3->set('tbldata',$datatbl);
 
+        $pw = $this->decrypt($datasrv[0]['password']);
 
-        $conn = create_con ($datasrv[0]['server'], $datasrv[0]['username'], $datasrv[0]['password'], $datadb[0]['dbname']);
+        $conn = create_con ($datasrv[0]['server'], $datasrv[0]['username'], $pw, $datadb[0]['dbname']);
         $result = show_tables($conn);
         while ($row = $result->fetch_assoc()) {
             $tables[$row['Tables_in_'.$datadb[0]['dbname']]] = [];
@@ -498,5 +500,14 @@ class ProjectController extends Controller {
 
         return $value;
 
+    }
+    function encrypt($token) {
+        $cryptor = new Cryptor($this->f3->get('ENCRYPTION_KEY'));
+        return $cryptor->encrypt($token);
+    }
+    function decrypt($crypted_token) {
+        $cryptor = new Cryptor($this->f3->get('ENCRYPTION_KEY'));
+        // echo $encryption_key;
+        return $cryptor->decrypt($crypted_token);
     }
 }

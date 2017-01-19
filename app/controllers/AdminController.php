@@ -131,6 +131,7 @@ class AdminController extends Controller {
             echo "</script>\n";
         // TODO Datenbankeinträge auch löschen
         } else {
+            echo 'TEST';
             $db->delete($params['id']);
         $this->f3->reroute('/addPrj/'.$params['srvid']);
         }
@@ -217,7 +218,7 @@ function addPrj() {
             $this->addPrjForm($f3, $id); 
             exit;
         }
-  		$pw = $this->f3->hash($data['password']);
+  		// $pw = $this->f3->hash($data['password']);
             var_dump ($data);
             var_dump ($pw);
         $user = new DbList($this->db);
@@ -225,7 +226,10 @@ function addPrj() {
 		$user->dbname = $data['dbname'];
 		$user->projectname = $data['projectname'];
 		$user->username = $data['username'];
+        if (strlen($password)) {
         $user->password = $this->encrypt($data['password']);
+        }
+        // echo '_'.$user->password;
 		$user->active = 1;
 		$user->save();
         $user->load(array('projectname=?',$data['projectname']));
@@ -335,7 +339,9 @@ function addSrv() {
 		$dbInDbList->server = $server;
 		$dbInDbList->srvtype = $srvtype;
 		$dbInDbList->username = $username;
+        if (strlen($password)) {
 		$dbInDbList->password = $this->encrypt($password); //Plaintext
+        }
 		$dbInDbList->save();
         $this->f3->reroute('/showSrv');
     }
@@ -363,8 +369,10 @@ function addSrv() {
 		$srv->server = $data['server'];
 		$srv->srvtype = $data['srvtype'];
 		$srv->username = $data['username'];
-        $_POST['password'] = $this->encrypt($data['password']);
+        if (strlen($_POST['password'])) {
+            $_POST['password'] = $this->encrypt($data['password']);
 		$srv->password = $pwcrypt;
+            }
 		$srv->edit($id_array['id']);
         $this->f3->reroute('/showSrv');
     }
@@ -373,25 +381,26 @@ function addSrv() {
     // var_dump($data);
     // var_dump($this->f3->POST['password']);
 
-
-    $crypted_token = $this->encrypt($this->f3->POST['password']);
-    $decrypted_token = $this->decrypt($crypted_token);
+    $token = $this->f3->POST['password'];
+    $decrypted_token = $this->decrypt($this->f3->POST['password']);
+    // $decrypted_token = $this->decrypt($crypted_token);
+    // $crypted_token = $this->encrypt($this->f3->POST['password']);
+    // $crypted_token = $this->encrypt($this->f3->POST['password']);
  
 
 
-
-    echo $crypted_token;
-    echo $this->f3->get('ENCRYPTION_KEY');
-    echo "-".$decrypted_token."-";
+    echo '- '.$token.'<br>';
+    echo "Entschlüsselt:".$decrypted_token.'<br>';
+    echo 'Verschlüsselt:'.$crypted_token.'<br>';
     }
 
     function encrypt($token) {
-        $encryption_key = $this->f3->get('ENCRYPTION_KEY');
         $cryptor = new Cryptor($this->f3->get('ENCRYPTION_KEY'));
         return $cryptor->encrypt($token);
     }
     function decrypt($crypted_token) {
         $cryptor = new Cryptor($this->f3->get('ENCRYPTION_KEY'));
+        // echo $encryption_key;
         return $cryptor->decrypt($crypted_token);
     }
 

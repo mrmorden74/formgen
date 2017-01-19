@@ -13,7 +13,7 @@ class Cryptor
     return openssl_cipher_iv_length($this->method);
   }
 
-  public function __construct($key = false, $method = false)
+  public function __construct($key = false, $method = 'AES-128-CTR')
   {
     if(!$key) {
       // if you don't supply your own key, this will be the default
@@ -45,9 +45,15 @@ class Cryptor
   public function decrypt($data)
   {
     $iv_strlen = 2  * $this->iv_bytes();
+    echo 'iv_strlen:'.$iv_strlen.'<br>';
+    echo 'data:'.$data.'<br>';
     if(preg_match("/^(.{" . $iv_strlen . "})(.+)$/", $data, $regs)) {
+      echo 'regs:';
+    var_dump ($regs);
+      echo 'OK'.'<br>';
       list(, $iv, $crypted_string) = $regs;
       $decrypted_string = openssl_decrypt($crypted_string, $this->method, $this->key, 0, hex2bin($iv));
+      echo 'decrypted: '.$decrypted_string;
       return $decrypted_string;
     } else {
       return false;
