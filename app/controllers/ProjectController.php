@@ -129,7 +129,7 @@ class ProjectController extends Controller {
         $this->f3->set('tbldata',$datatbl);
 
         $pw = $this->decrypt($datasrv[0]['password']);
-
+        // echo $datasrv[0]['server'], $datasrv[0]['username'], $pw, $datadb[0]['dbname'];
         $conn = create_con ($datasrv[0]['server'], $datasrv[0]['username'], $pw, $datadb[0]['dbname']);
         $result = show_tables($conn);
         while ($row = $result->fetch_assoc()) {
@@ -204,7 +204,8 @@ class ProjectController extends Controller {
         }
         $object[$formname]['projectname'] = $datadb[0]['projectname'];
         $object[$formname]['srvlist_id'] = $datadb[0]['srvlist_id'];
-        if ($conn = create_con ($datasrv[0]['server'], $datasrv[0]['username'], $datasrv[0]['password'], $datadb[0]['dbname'])) {
+        $pw = $this->decrypt($datasrv[0]['password']);
+        if ($conn = create_con ($datasrv[0]['server'], $datasrv[0]['username'], $pw, $datadb[0]['dbname'])) {
             $sql="SHOW FIELDS FROM ".$datatbl[0]['tablename'];
             // $sql="DESCRIBE ".$datatbl[0]['tablename'];
             if (!($result=mysqli_query($conn,$sql))) {
@@ -418,7 +419,7 @@ class ProjectController extends Controller {
         $root = $this->f3->get('ROOT');
         $path = $root.'\\formgen\\'.$datadb[0]['projectname'].'\\'.$datatbl[0]['formname'];
         $filename = $datatbl[0]['formname'];
-        $format = 'json';
+        $format = 'ser';
         export_file ($filename,$path,$export,$format);
         $source = $root.'\\app\\blueprints\\form';
         // TODO: wieder aktivieren DEBUG

@@ -1,6 +1,7 @@
 <?php
 include ('inc/utilities.inc.php');
 include ('inc/db-connect.inc.php');
+include ('inc/cryptor.php');
 $titel = getTitel();
 $links = getLinks();
 $SrvId = getSrvId();

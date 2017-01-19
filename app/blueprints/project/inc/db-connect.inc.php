@@ -9,7 +9,11 @@
 */
 function connectDB(string $user, string $pw, string $host, string $db) : mysqli {
 	
-	// echo 'connect: ', $user,'-', $pw,'-', $host,'-', $db;
+	 echo 'connect: ', $user,'-', $pw,'-', $host,'-', $db;
+	echo '1:'.$pw;
+	$pw = decrypt($pw);
+	echo '2:'.$pw;
+
 	$mysqli = new mysqli($host, $user, $pw, $db);
 	// var_dump($mysqli->connect_errno);
 	if ($mysqli->connect_errno) {
@@ -29,6 +33,7 @@ function connectDB(string $user, string $pw, string $host, string $db) : mysqli 
 function getConDb() {
 	$string = explode(',', file_get_contents('../config/dbconfig.csv', true));
 	// var_dump ($string);
+	$string[4] = decrypt($string[4]);
  return array(
 	"user" => $string[3]  ,
   	"pw" => $string[4]  ,
@@ -51,5 +56,16 @@ function getDbId() {
 	// var_dump ($string);
  return $string[7];
 }
+function encrypt($token) {
+	$cryptor = new Cryptor('CKXH2U9RPY3EFD70TLS1ZG4N8WQBOVI6AMJ5');
+	return $cryptor->encrypt($token);
+}
+function decrypt($crypted_token) {
+	$cryptor = new Cryptor('CKXH2U9RPY3EFD70TLS1ZG4N8WQBOVI6AMJ5');
+	// echo $encryption_key;
+	return $cryptor->decrypt($crypted_token);
+}
+
+
 
 ?>

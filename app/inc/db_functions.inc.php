@@ -158,6 +158,10 @@ function export_file ($filename,$path,$data,$format='csv') {
             $fp = fopen($path.'\\'.$filename.'.json', 'w');
             $data_export = json_encode($data,JSON_PRETTY_PRINT);
         break;
+        case 'array':
+            $fp = fopen($path.'\\'.$filename.'.php', 'w');
+            var_dump($data);
+        break;
         default:
             # code...
             break;
