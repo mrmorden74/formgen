@@ -4,11 +4,11 @@
     <label for="Server">Server</label>
     <input type="text" class="form-control" id="Server" name="server" placeholder="Server" value="{{ @POST.server }}">
     <label for="UserName">Benutzername</label>
-    <input type="text" class="form-control" id="UserName" name="username" placeholder="Benutzername" value="{{ @POST.server }}">
+    <input type="text" class="form-control" id="UserName" name="username" placeholder="Benutzername" value="{{ @POST.username }}">
     <label for="DbPassword">Passwort</label>
-    <input type="password" class="form-control" id="DbPassword" name="password" placeholder="Passwort" value="{{ @POST.server }}">
+    <input type="text" class="form-control" id="DbPassword" name="password" placeholder="Passwort" value="{{ @POST.password }}">
     <label for="SrvType">Datenbanktyp</label>    
-    <select class="form-control" name="srvtype" id="SrvType" value="{{ @POST.server }}">
+    <select class="form-control" name="srvtype" id="SrvType" value="{{ @POST.srvtype }}">
         <option>MySql</option>
         <option disabled>PostgreSQL</option>
         <option disabled>OCl8</option>

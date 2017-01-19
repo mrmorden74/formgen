@@ -29,7 +29,7 @@ class AdminController extends Controller {
         $db = new SrvList($this->db);
         $db->load(array('id=?',$id['id']));
         $db->copyTo('POST');
-        if(!$db->dry()) {
+        $_POST['password'] = $this->decrypt($_POST['password']);        if(!$db->dry()) {
             $valid=[];
             $valid[]= "No data exist!"; 
         }
@@ -109,6 +109,11 @@ class AdminController extends Controller {
         $db->delete($id['id']);
         $this->f3->reroute('/showUser');
     }
+    function delSrv($f3,$id) {
+        $db = new SrvList($this->db);
+        $db->delete($id['id']);
+        $this->f3->reroute('/showSrv');
+    }
     function delPrj($f3,$params) {
         $db = new DbList($this->db);
 
@@ -151,8 +156,12 @@ class AdminController extends Controller {
     function showSrv(){
         $db = new SrvList($this->db);
         $db->all();
+        $contbd = 0;
         for ($db->load(); !$db->dry(); $db->next()){
             $data[] = $db->cast();
+        // var_dump($data[$contbd]);    
+        $data[$contbd]['password'] = $this->decrypt($data[$contbd]['password']);
+        $contbd ++;
         }
         $this->f3->set('dataFromDb',$data);
         if(!$db->dry()) {
@@ -165,7 +174,6 @@ class AdminController extends Controller {
         $this->f3->set('admin_tool','adminSrvBase.html');
         echo $template->render('base.html');
         // var_dump($db);    
-        // var_dump($data);    
     }
     
     function addUserForm(){
@@ -216,7 +224,7 @@ function addPrj() {
 		$user->dbname = $data['dbname'];
 		$user->projectname = $data['projectname'];
 		$user->username = $data['username'];
-		$user->password = $data['password'];
+        $user->password = $this->encrypt($data['password']);
 		$user->active = 1;
 		$user->save();
         $user->load(array('projectname=?',$data['projectname']));
@@ -326,7 +334,7 @@ function addSrv() {
 		$dbInDbList->server = $server;
 		$dbInDbList->srvtype = $srvtype;
 		$dbInDbList->username = $username;
-		$dbInDbList->password = $password; //Plaintext
+		$dbInDbList->password = $this->encrypt($password); //Plaintext
 		$dbInDbList->save();
         $this->f3->reroute('/showSrv');
     }
@@ -334,21 +342,56 @@ function addSrv() {
         echo 'init';
     }
 
+    function editSrv($f3,$id_array) {
+        $data = $this->f3->get('POST');
+        $valid = Validate::is_valid($data, array(
+            'server' => 'required',
+            'srvtype' => 'required',
+            'username' => 'required|max_len,100|min_len,4',
+            'password' => 'max_len,100',
+        ));
+
+        if($valid === true) {
+            // continue
+        } else {
+            $this->f3->set('validsrv',$valid);;
+            $this->editSrvForm($f3,$id_array);
+            exit;
+        }
+        $srv = new SrvList($this->db);
+		$srv->server = $data['server'];
+		$srv->srvtype = $data['srvtype'];
+		$srv->username = $data['username'];
+        $_POST['password'] = $this->encrypt($data['password']);
+		$srv->password = $pwcrypt;
+		$srv->edit($id_array['id']);
+        $this->f3->reroute('/showSrv');
+    }
     function editPrj() {
     $data = $this->f3->get('POST');
-    var_dump($data);
-    var_dump($this->f3->POST['password']);
+    // var_dump($data);
+    // var_dump($this->f3->POST['password']);
 
 
-    $token = $this->f3->POST['password'];
-    $encryption_key = $this->f3->get('ENCRYPTION_KEY');
-    $cryptor = new Cryptor($this->f3->get('ENCRYPTION_KEY'));
-    $crypted_token = $cryptor->encrypt($token);
-    unset($token,$encryption_key); 
+    $crypted_token = $this->encrypt($this->f3->POST['password']);
+    $decrypted_token = $this->decrypt($crypted_token);
+ 
 
-    $cryptor = new Cryptor($this->f3->get('ENCRYPTION_KEY'));
-    $decrypted_token = $cryptor->decrypt($crypted_token);
 
-    echo $decrypted_token;
+
+    echo $crypted_token;
+    echo $this->f3->get('ENCRYPTION_KEY');
+    echo "-".$decrypted_token."-";
     }
+
+    function encrypt($token) {
+        $encryption_key = $this->f3->get('ENCRYPTION_KEY');
+        $cryptor = new Cryptor($this->f3->get('ENCRYPTION_KEY'));
+        return $cryptor->encrypt($token);
+    }
+    function decrypt($crypted_token) {
+        $cryptor = new Cryptor($this->f3->get('ENCRYPTION_KEY'));
+        return $cryptor->decrypt($crypted_token);
+    }
+
 }

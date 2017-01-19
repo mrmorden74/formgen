@@ -1,3 +1,5 @@
+Struktur
+    config files hinausverlagern
 Initialisierung
     time delay beim Erstellen der Datenbank
 Projektauswahl
