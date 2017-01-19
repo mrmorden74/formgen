@@ -51,7 +51,8 @@ class AdminController extends Controller {
             $valid=[];
             $valid[]= "No data exist!"; 
         }
-        if($con = create_con($_POST['server'],$_POST['username'],$_POST['password'])) {
+        $password =  $this->decrypt($_POST['password']);
+        if($con = create_con($_POST['server'],$_POST['username'],$password)) {
             if($result = show_db($con)) {
                 while( $row = mysqli_fetch_row( $result ) ){
                     if (($row[0]!="information_schema") && ($row[0]!="mysql")) {
