@@ -22,6 +22,10 @@ class ProjectController extends Controller {
             $data[$count]['server'] = $srvname[$data[$count]['srvlist_id']]['server']; 
             $data[$count]['username'] = $srvname[$data[$count]['srvlist_id']]['username']; 
             $data[$count]['password'] = $srvname[$data[$count]['srvlist_id']]['password']; 
+            $pw = $srvname[$data[$count]['srvlist_id']]['password'];
+            echo $pw;
+            $pw = $this->decrypt_prj($pw);
+            echo '-'.$pw;
             if ($conn = create_con (
                 $data[$count]['server'], 
                 $data[$count]['username'], 
@@ -498,5 +502,14 @@ class ProjectController extends Controller {
 
         return $value;
 
+    }
+    function encrypt_prj($token) {
+        $encryption_key = $this->f3->get('ENCRYPTION_KEY');
+        $cryptor = new Cryptor($this->f3->get('ENCRYPTION_KEY'));
+        return $cryptor->encrypt($token);
+    }
+    function decrypt_prj($crypted_token) {
+        $cryptor = new Cryptor($this->f3->get('ENCRYPTION_KEY'));
+        return $cryptor->decrypt($crypted_token);
     }
 }

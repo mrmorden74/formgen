@@ -1,6 +1,7 @@
 <?php
 $init_success = false;
 if (isset($_POST['myserver'])) {
+  var_dump($_POST);
   if($con = create_con($_POST['myserver'],$_POST['user'],$_POST['pwd'])) {
     if($con = create_db($con,$_POST['dbname'])) {
       $handle = fopen("config_db.ini", "w");

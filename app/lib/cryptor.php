@@ -50,6 +50,7 @@ class Cryptor
       $decrypted_string = openssl_decrypt($crypted_string, $this->method, $this->key, 0, hex2bin($iv));
       return $decrypted_string;
     } else {
+      echo 'test';
       return false;
     }
   }
