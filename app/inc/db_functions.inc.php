@@ -2,19 +2,28 @@
     // Verbindung testen
     // Create connection
 function create_con ($server, $user, $pwd, $db = NULL, $port = 3306) {
+    set_error_handler("customError");     
     $conn = new mysqli($server, $user, $pwd, $db, $port);
     // Check connection
     if ($conn->connect_error) {
         //TODO errorhandling doesn't work'
-        $valid=[];
-        $valid[]= "Connection failed: " . $conn->connect_error; 
-        $f3->set('validdb',$valid);;
+        // $valid=[];
+        // $valid[]= "Connection failed: " . $conn->connect_error; 
+        // $f3->set('validdb',$valid);;
         // $this->addDbForm(); 
         return false;
     }
 	return $conn;
 } 
 
+function customError($errno = 1, $errstr = "!!! ERROR !!!") {
+//   echo "Ending Script";
+        // $valid=[];
+        // $valid[]= "<b>Error:</b> [$errno] $errstr<br>"; 
+        return false;
+        // $this->f3->set('validdb',$valid);;
+        // $this->addDbForm(); 
+}
     // Verbindung testen
     // Create connection
 function show_db ($conn) {
@@ -143,6 +152,7 @@ function xcopy($source, $dest, $permissions = 0755)
 *   @return bool 
 */
 function export_file ($filename,$path,$data,$format='csv') {
+//  echo $filename,$path,$data,$format;
     // Ordner erzeugen
     $chmod = 0777;
     if(!(is_dir($path) OR is_file($path) OR is_link($path) )) { 
@@ -151,27 +161,91 @@ function export_file ($filename,$path,$data,$format='csv') {
     //filename und Exportdatenumwandlung
     switch ($format) {
         case 'ser':
-            $fp = fopen($path.'\\'.$filename.'.ser', 'w');
+            $filename = $filename.'.ser';
             $data_export = serialize ($data);
         break;
         case 'json':
-            $fp = fopen($path.'\\'.$filename.'.json', 'w');
+            $filename = $filename.'.json';
             $data_export = json_encode($data,JSON_PRETTY_PRINT);
         break;
         case 'array':
-            $fp = fopen($path.'\\'.$filename.'.php', 'w');
-            var_dump($data);
+            $filename = $filename.'.php';
+            $data_export = mkArrayPhpCode($data,'$formConfigAll');
         break;
         default:
             # code...
             break;
     }
     //File schreiben und schließen
+    // echo $filename;
+    $fp = fopen($path.'\\'.$filename, 'w');
     fwrite($fp, $data_export);
     fclose($fp);
     echo $data_export;
     // TODO: Errorhandling 
 	return true;
+}
+
+function mkArrayPhpCode ($data, $name) {
+    $data_export = "<?php\n\n$name = [\n";
+    if (!is_array($data)) {
+        $data_export .= "\"$data\",\n";       
+    } else {
+        foreach ($data as $key => $value) {
+            $data_export .= "\t\"$key\" => ";
+            if (!is_array($value)) {
+                $data_export .= "\"$value\",\n";       
+            } else {
+                $data_export .= "[\n";
+                foreach ($value as $key2 => $value2) {
+                    $data_export .= "\t\t\"$key2\" => ";
+                    if (!is_array($value2)) {
+                        $data_export .= "\"$value2\",\n";       
+                    } else {
+                        $data_export .= "[\n";
+                        foreach ($value2 as $key3 => $value3) {
+                            // echo $key3.' => '.$value3.'\n';
+                            $data_export .= "\t\t\t\"$key3\" =>";
+                            if (!is_array($value3)) {
+                                $data_export .= set_typ($value3).",\n";  
+                            }
+                        }
+                        $data_export .= "\t\t],\n";
+                    }
+                }
+                $data_export .= "\t],\n";
+            }
+        }
+    }
+    $data_export .= "];\n";
+    echo $data_export;
+    var_dump($data);
+    return $data_export;
+}
+
+function set_typ ($value) {
+    $vartype = gettype ($value);
+    switch ($vartype) {
+        case 'boolean':
+            $fill = '';
+            $boolval = 'false';
+            if ($value = 1) $boolval = 'true';
+            $retval = $fill.$boolval.$fill;
+            break;
+        case 'integer':
+        case 'double':
+            $fill = '';
+            $retval = $fill.$value.$fill;
+            break;
+        case 'string':
+            $fill = '"';
+            $retval = $fill.$value.$fill;
+            break;
+        default:
+            $fill = '"';
+            break;
+    }
+    return $retval;
 }
 
 function update_db ($dbname) {    

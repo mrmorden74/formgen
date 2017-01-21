@@ -1,6 +1,8 @@
 <div class="container">
 <h2>Datenverbindungen</h2>
-<table class="table table-striped table-bordered">
+    <repeat group="{{ @validsrv }}" value="{{ @error }}">
+        <p class="error">{{ filter_var(trim(@error), FILTER_SANITIZE_STRING) }}</p>
+    </repeat><table class="table table-striped table-bordered">
   <tr>
       <th>Server</th>
       <th>Datenbanktyp</th>
@@ -26,4 +28,5 @@
 <a href="/addSrv">
     <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Verbindung hinzufügen
 </a>
+
 </div>

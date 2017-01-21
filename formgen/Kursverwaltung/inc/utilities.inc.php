@@ -17,6 +17,7 @@ function getTitel() {
 
 /**
 *	$formConfig wird aus json Datein ausgelesen
+*	NICHT MEHR IN VERWENDUNG 
 *	@param $titel string Name des Formulars (FormGen)
 *   @return array 
 */

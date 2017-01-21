@@ -350,7 +350,7 @@ class ProjectController extends Controller {
         // var_dump($params);
         
         $data = $this->f3->get('POST');
-        var_dump($data);
+        // var_dump($data);
         $valid = Validate::is_valid($data[0], array(
             'fieldname' => 'alpha_numeric',
         ));
@@ -419,12 +419,12 @@ class ProjectController extends Controller {
         $root = $this->f3->get('ROOT');
         $path = $root.'\\formgen\\'.$datadb[0]['projectname'].'\\'.$datatbl[0]['formname'];
         $filename = $datatbl[0]['formname'];
-        $format = 'ser';
+        $format = 'array';
         export_file ($filename,$path,$export,$format);
         $source = $root.'\\app\\blueprints\\form';
         // TODO: wieder aktivieren DEBUG
-        var_dump($_POST);
-        $files = xcopy($source, $path);
+        // var_dump($_POST);
+        // $files = xcopy($source, $path);
         $this->f3->reroute('/createFrm/'.$params['id']);
     }
 
