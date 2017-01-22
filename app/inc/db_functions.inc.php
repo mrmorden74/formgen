@@ -73,7 +73,7 @@ function close_dbcon ($conn) {
 }
 
 function create_folder ($root,$data) {
-    var_dump ($data);
+    // var_dump ($data);
     // Ordner mit config erzeugen
     $path = $root.'\\formgen\\'.$data['projectname'].'\\config';
     $chmod = 0777;
@@ -89,7 +89,7 @@ function create_folder ($root,$data) {
     } 
     $fp = fopen($path.'\\dbconfig.csv', 'w');
     fputcsv($fp, $data);
-    echo $fp;
+    // echo $fp;
     fclose($fp);
     $source = $root.'\\app\\blueprints\\project';
     $dest = $root.'\\formgen\\'.$data['projectname'];

@@ -82,6 +82,9 @@ class AdminController extends Controller {
                         $prjs->copyTo('POST');
                         if (!in_array($dbname, $blacklist)) {
                         $dbs3[$dbname] = $_POST;
+                            if ($dbs3[$dbname]['password']) {
+                                $dbs3[$dbname]['password'] = $this->decrypt($dbs3[$dbname]['password']);
+                            }
                         }
                     }
                 }
@@ -98,12 +101,12 @@ class AdminController extends Controller {
         echo $template->render('base.html');
     }    
 
-/**
-*  Validiert und speichert geänderte Userdaten in der Datenbanktabelle user
-*  param $f3    object	fatfree Object
-*  param $id['id']	array	UserId
-*  return reroute showUser
-*/
+    /**
+    *  Validiert und speichert geänderte Userdaten in der Datenbanktabelle user
+    *  param $f3    object	fatfree Object
+    *  param $id['id']	array	UserId
+    *  return reroute showUser
+    */
     function editUser($f3,$id) {
         $data = $this->f3->get('POST');
         var_dump($data);
@@ -133,25 +136,25 @@ class AdminController extends Controller {
         $this->f3->reroute('/showUser');
     }
 
-/**
-*  Löscht Usereintrag aus der Datenbanktabelle user
-*  param $f3    object	fatfree Object
-*  param $id['id']	array	UserId
-*  return reroute showUser
-*/
+    /**
+    *  Löscht Usereintrag aus der Datenbanktabelle user
+    *  param $f3    object	fatfree Object
+    *  param $id['id']	array	UserId
+    *  return reroute showUser
+    */
     function delUser($f3,$id) {
         $usr = new User($this->db);
         $usr->delete($id['id']);
         $this->f3->reroute('/showUser');
     }
 
-/**
-*  Löscht Servereintrag aus der Datenbanktabelle srvlist
-*  Prüft zuvor auf Einträge in der dblist.
-*  param $f3    object	fatfree Object
-*  param $id['id']	array	ServerID
-*  return route showSrv
-*/
+    /**
+    *  Löscht Servereintrag aus der Datenbanktabelle srvlist
+    *  Prüft zuvor auf Einträge in der dblist.
+    *  param $f3    object	fatfree Object
+    *  param $id['id']	array	ServerID
+    *  return route showSrv
+    */
     function delSrv($f3,$id) {
         $srv = new SrvList($this->db);
         $db = new DbList($this->db);
@@ -169,13 +172,13 @@ class AdminController extends Controller {
         $this->showSrv();
     }
 
-/**
-*  Löscht Proejkteintrag aus der Datenbanktabelle DbList
-*  Prüft zuvor auf Einträge in der TblList.
-*  param $f3    object	fatfree Object
-*  param $id['id']	array	DatenbankId
-*  return route addPrj
-*/
+    /**
+    *  Löscht Proejkteintrag aus der Datenbanktabelle DbList
+    *  Prüft zuvor auf Einträge in der TblList.
+    *  param $f3    object	fatfree Object
+    *  param $id['id']	array	DatenbankId
+    *  return route addPrj
+    */
     function delPrj($f3,$id) {
         $db = new DbList($this->db);
 
@@ -198,10 +201,10 @@ class AdminController extends Controller {
         }
     }
 
-/**
-*  Rendert Userliste
-*  return render adminUserBase
-*/
+    /**
+    *  Rendert Userliste
+    *  return render adminUserBase
+    */
     function showUser(){
         $db = new User($this->db);
         $db->all();
@@ -220,10 +223,10 @@ class AdminController extends Controller {
         echo $template->render('base.html');
     }
 
-/**
-*  Rendert Server (Hosts)
-*  return render adminSrvBase
-*/
+    /**
+    *  Rendert Server (Hosts)
+    *  return render adminSrvBase
+    */
     function showSrv(){
         $db = new SrvList($this->db);
         $db->all();
@@ -247,10 +250,10 @@ class AdminController extends Controller {
         // var_dump($db);    
     }
     
-/**
-*  Rendert Formular zur Usereingae
-*  return render adminUserAdd.html
-*/
+    /**
+    *  Rendert Formular zur Usereingae
+    *  return render adminUserAdd.html
+    */
     function addUserForm(){
 
 		// $user = new User($this->db);
@@ -264,10 +267,10 @@ class AdminController extends Controller {
         echo $template->render('base.html');
     }
 
-/**
-*  Rendert Formular zur Servereingabe
-*  return render adminSrvAdd.html
-*/
+    /**
+    *  Rendert Formular zur Servereingabe
+    *  return render adminSrvAdd.html
+    */
     function addSrvForm(){
 
 		// $user = new User($this->db);
@@ -282,11 +285,11 @@ class AdminController extends Controller {
         var_dump($this->f3);
     }
 
-/**
-*  Validiert und fügt Projekt (Datenbank) aus $_POST 
-*  in die SrvList hinzu.
-*  return reroute addPrj
-*/
+    /**
+    *  Validiert und fügt Projekt (Datenbank) aus $_POST 
+    *  in die SrvList hinzu.
+    *  return reroute addPrj
+    */
     function addPrj() {
         $data = $this->f3->get('POST');
         $valid = Validate::is_valid($data, array(
@@ -304,16 +307,14 @@ class AdminController extends Controller {
         }
   		// $pw = $this->f3->hash($data['password']);
             var_dump ($data);
-            var_dump ($pw);
         $user = new DbList($this->db);
 		$user->srvlist_id = $data['srvlist_id'];
 		$user->dbname = $data['dbname'];
 		$user->projectname = $data['projectname'];
 		$user->username = $data['username'];
-        if (strlen($password)) {
+        if (strlen($data['password'])) {
         $user->password = $this->encrypt($data['password']);
         }
-        // echo '_'.$user->password;
 		$user->active = 1;
 		$user->save();
         $user->load(array('projectname=?',$data['projectname']));
@@ -336,10 +337,10 @@ class AdminController extends Controller {
         $this->f3->reroute('/addPrj/'.$data['srvlist_id']);
     }
 
-/**
-*  Validiert und fügt User aus $_POST in die User Tabelle hinzu.
-*  return reroute showUser
-*/
+    /**
+    *  Validiert und fügt User aus $_POST in die User Tabelle hinzu.
+    *  return reroute showUser
+    */
     function addUser() {
 
         $data = $this->f3->get('POST');
@@ -381,10 +382,10 @@ class AdminController extends Controller {
         $this->f3->reroute('/showUser');
     }
 
-/**
-*  Validiert und fügt Server aus $_POST in die SrvList hinzu
-*  return route addSrvForm
-*/
+    /**
+    *  Validiert und fügt Server aus $_POST in die SrvList hinzu
+    *  return route addSrvForm
+    */
     function addSrv() {
         $data = $this->f3->get('POST');
         $valid = Validate::is_valid($data, array(
@@ -441,12 +442,12 @@ class AdminController extends Controller {
             $this->f3->reroute('/showSrv');
     }
 
-/**
-*  Validiert und speichert geänderte Serverdaten.
-*  param $f3    object	fatfree Object
-*  param $id['id']	array	ServerID
-*  return reroute showSrv
-*/
+    /**
+    *  Validiert und speichert geänderte Serverdaten.
+    *  param $f3    object	fatfree Object
+    *  param $id['id']	array	ServerID
+    *  return reroute showSrv
+    */
     function editSrv($f3,$id) {
         $data = $this->f3->get('POST');
         $valid = Validate::is_valid($data, array(
@@ -475,46 +476,90 @@ class AdminController extends Controller {
         $this->f3->reroute('/showSrv');
     }
 
-/** 
-*  TODO:  Edit Projekt
-*  Validiert und speichert geänderte Projektdaten.
-*  return route showSrv
-*/
-    function editPrj() {
+    /**
+    *  Rendert das ausgewählte Projekt zur Bearbeitung 
+    *  param $f3	object	fatfree object
+    *  param $id['id']	array	ServerId
+    *  return render adminSrvEdit.html
+    */  
+    function editPrjForm($f3,$id) {
+        $db = new DbList($this->db);
+        $db->load(array('id=?',$id['id']));
+        $db->copyTo('POST');
+        // var_dump($_POST);
+        $_POST['password'] = $this->decrypt($_POST['password']);
+        $template=new Template;
+        $this->f3->set('header','header.html');
+        $this->f3->set('content','admin.html');
+        $this->f3->set('admin_tool','adminPrjEdit.html');
+        echo $template->render('base.html');
+        // var_dump($db);
+    } 
+    /** 
+    *  TODO:  Edit Projekt
+    *  Validiert und speichert geänderte Projektdaten.
+    *  return route showSrv
+    */
+    function editPrj($f3,$id) {
         $data = $this->f3->get('POST');
-        // var_dump($data);
-        // var_dump($this->f3->POST['password']);
+        $valid = Validate::is_valid($data, array(
+            'dbname' => 'required',
+            'projectname' => 'required',
+            'username' => 'required|max_len,20|min_len,4',
+            'password' => 'max_len,20',
+        ));
+        $this->f3->POST['password'] = $this->encrypt($this->f3->POST['password']);
 
-        $token = $this->f3->POST['password'];
-        $decrypted_token = $this->decrypt($this->f3->POST['password']);
-        // $decrypted_token = $this->decrypt($crypted_token);
-        // $crypted_token = $this->encrypt($this->f3->POST['password']);
-        // $crypted_token = $this->encrypt($this->f3->POST['password']);
-    
-
-
-        echo '- '.$token.'<br>';
-        echo "Entschlüsselt:".$decrypted_token.'<br>';
-        echo 'Verschlüsselt:'.$crypted_token.'<br>';
+        if($valid === true) {
+            // continue
+        } else {
+            $this->f3->set('validprj',$valid);;
+            $this->editPrjForm($f3,$id);
+            exit;
+        }
+        $db = new DbList($this->db);
+		$db->dbname = $data['dbname'];
+		$db->projectname = $data['projectname'];
+		$db->username = $data['username'];
+        if (strlen($_POST['password'])) {
+            $_POST['password'] = $this->encrypt($data['password']);
+		$db->password = $_POST['password'];
+            }
+		$db->edit($id['id']);
+        $srvId = $this->getSrvIDfromDbId ($id['id']);
+        $this->f3->reroute('/addPrj/'.$srvId);
     }
 
 /**
-*  Verschlüsselt $token mit vorgebenen ENCRYPTION_KEY.
-*  twoway encryption
-*  param    $token  string  Zu verschlüsselnder String
-*  return   string  verschlüsselter Token
+*  Liefer die passende ServerId zur DbListId
+*  param $DbId	int	Datenbank = Projekt Id
+*  return Int	ServerId
 */
+    function getSrvIDfromDbId ($DbId) {
+        $db = new DbList($this->db);
+		for ($db->load(array('id=?',$DbId)); !$db->dry(); $db->next()){
+            $datadb[] = $db->cast();
+        }
+        return $datadb[0]['srvlist_id'];
+    }
+
+    /**
+    *  Verschlüsselt $token mit vorgebenen ENCRYPTION_KEY.
+    *  twoway encryption
+    *  param    $token  string  Zu verschlüsselnder String
+    *  return   string  verschlüsselter Token
+    */
     function encrypt($token) {
         $cryptor = new Cryptor($this->f3->get('ENCRYPTION_KEY'));
         return $cryptor->encrypt($token);
     }
 
-/**
-*  Entschlüsselt $token mit vorgebenen ENCRYPTION_KEY.
-*  twoway encryption
-*  param    $token  string  verschlüsselter String
-*  return   string  entschlüsselter Token
-*/
+    /**
+    *  Entschlüsselt $token mit vorgebenen ENCRYPTION_KEY.
+    *  twoway encryption
+    *  param    $token  string  verschlüsselter String
+    *  return   string  entschlüsselter Token
+    */
     function decrypt($crypted_token) {
         $cryptor = new Cryptor($this->f3->get('ENCRYPTION_KEY'));
         // echo $encryption_key;
