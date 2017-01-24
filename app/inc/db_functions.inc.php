@@ -181,7 +181,7 @@ function export_file ($filename,$path,$data,$format='csv') {
     $fp = fopen($path.'\\'.$filename, 'w');
     fwrite($fp, $data_export);
     fclose($fp);
-    echo $data_export;
+    // echo $data_export;
     // TODO: Errorhandling 
 	return true;
 }
@@ -218,8 +218,8 @@ function mkArrayPhpCode ($data, $name) {
         }
     }
     $data_export .= "];\n";
-    echo $data_export;
-    var_dump($data);
+    // echo $data_export;
+    // var_dump($data);
     return $data_export;
 }
 
@@ -252,6 +252,12 @@ function update_db ($dbname) {
 
 }
 
+/**
+*  Liefert alle Tabellen einer Datenbank als MySqli Objekt
+*  param $conn	mysqli 	MySqliConnection
+*  param $dbname	string	Datenbankname, NULL wird aktive Datenbank genommen oder Fehler
+*  return object    mysqli Object
+*/
 function show_tables ($conn,$dbname = NULL) {
     if (is_null($dbname)) {
         $sql="SELECT database() AS activ_db";
@@ -263,15 +269,14 @@ function show_tables ($conn,$dbname = NULL) {
     }
     $sql="SHOW TABLES FROM ".$dbname;
     if (!($result=mysqli_query($conn,$sql))) {
-    // echo $dbname;
-        // echo $dbname;
         // printf("Error3: %s\n", mysqli_error($conn));
         $valid[]= "Error3: ". $result->error; 
         var_dump ($valid);
-        // $f3->set('validdb',$valid);
-       return false;
+        return false;
     }
-    $tables = $result->fetch_assoc();
-    // echo $tables;
 	return $result;
+}
+
+function insert_table () {
+
 }

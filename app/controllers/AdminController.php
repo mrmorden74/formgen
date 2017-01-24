@@ -21,7 +21,7 @@ class AdminController extends Controller {
         $this->f3->set('content','admin.html');
         $this->f3->set('admin_tool','adminUserEdit.html');
         echo $template->render('base.html');
-        var_dump($db);
+        // var_dump($db);
  
     }
 
@@ -45,7 +45,7 @@ class AdminController extends Controller {
         $this->f3->set('content','admin.html');
         $this->f3->set('admin_tool','adminSrvEdit.html');
         echo $template->render('base.html');
-        var_dump($db);
+        // var_dump($db);
  
     }    
 
@@ -109,7 +109,7 @@ class AdminController extends Controller {
     */
     function editUser($f3,$id) {
         $data = $this->f3->get('POST');
-        var_dump($data);
+        // var_dump($data);
         $valid = Validate::is_valid($data, array(
             'username' => 'required|alpha_numeric',
             'type' => 'required|contains,admin user'
@@ -195,7 +195,7 @@ class AdminController extends Controller {
             echo "</script>\n";
         // TODO Datenbankeinträge auch löschen
         } else {
-            echo 'TEST';
+            // echo 'TEST';
             $db->delete($id['id']);
         $this->f3->reroute('/addPrj/'.$id['srvid']);
         }
@@ -282,7 +282,7 @@ class AdminController extends Controller {
         $this->f3->set('content','admin.html');
         $this->f3->set('admin_tool','adminSrvAdd.html');
         echo $template->render('base.html');
-        var_dump($this->f3);
+        // var_dump($this->f3);
     }
 
     /**
@@ -306,7 +306,7 @@ class AdminController extends Controller {
             exit;
         }
   		// $pw = $this->f3->hash($data['password']);
-            var_dump ($data);
+            // var_dump ($data);
         $user = new DbList($this->db);
 		$user->srvlist_id = $data['srvlist_id'];
 		$user->dbname = $data['dbname'];

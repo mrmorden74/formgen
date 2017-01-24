@@ -5,8 +5,7 @@
   <tr>
       <th>Tabellenname</th>
       <th>Formularname</th>
-      <th>Anzahl<br>Tabellenfelder</th>
-      <th>Anzahl<br>Formulfelder</th>
+      <th>Status</th>
       <th>Formulare<br>bearbeiten</th>
   </tr>
     <repeat group="{{ @dataFromDb }}" key="{{ @key }}" value="{{ @db }}">
@@ -29,8 +28,8 @@
                 </check>
                 >
             </td>
-            <td></td>
-            <td></td>
+            <td><p class="form-control-static"><check if="{{ @db.formexist == 1 }}">erstellt<false>offen</false></check></p>
+            </td>
             <td><button type="submit" class="btn btn-default" aria-label="Left Align"><span class="glyphicon 
                 <check if="{{ @db.formname == '' }}">
                         glyphicon-plus green-symb" aria-hidden="true"></span></button></form>
@@ -55,11 +54,12 @@
                 <input type="text" class="form-control" id="TblName" name="tablename" placeholder="Tabellenname"></td>
             <td><input type="text" class="form-control" id="FrmName" name="formname" placeholder="Formularname" ></td>
             <td></td>
-            <td></td>
             <td><button type="submit" class="btn btn-default" aria-label="Left Align"><span class="glyphicon glyphicon-plus green-symb" aria-hidden="true"></span></button></td>
         </tr>
 </form>
 </table>
     <repeat group="{{ @validfrm }}" value="{{ @error }}">
         <p class="error">EROOR {{ filter_var(trim(@error), FILTER_SANITIZE_STRING) }}</p>
-    </repeat></div>
+    </repeat>
+<a href="/">zurück</a>
+    </div>

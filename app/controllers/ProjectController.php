@@ -1,52 +1,74 @@
 <?php
 
 class ProjectController extends Controller {
-   function render() {
 
-    $srv = new SrvList($this->db);
-    for ($srv->all(); !$srv->dry(); $srv->next()){
-        $datasrv[] = $srv->cast();
-    }
-    if(count($datasrv)>0) {
-        foreach ($datasrv as $key => $value) {
-            $srvname[$value['id']] = $datasrv[$key];
-            $this->f3->set('srvs',$srvname);
-        }   
-    }
-    $db = new DbList($this->db);
-    $count = 0;
-    $data = [];
-    
-        for ($db->all(); !$db->dry(); $db->next()){
-            $data[] = $db->cast();
-            $data[$count]['server'] = $srvname[$data[$count]['srvlist_id']]['server']; 
-            $data[$count]['username'] = $srvname[$data[$count]['srvlist_id']]['username']; 
-            $data[$count]['password'] = $srvname[$data[$count]['srvlist_id']]['password']; 
-            $pw = $this->decrypt($data[$count]['password']);
-            if ($conn = create_con (
-                $data[$count]['server'], 
-                $data[$count]['username'], 
-                $pw)) {
-            $data[$count]['tables'] = show_tables ($conn,$data[$count]['dbname'])->num_rows ?? 0;
-            }
-            $count ++;
+    /**
+    *  Rendert Hauptseite Projektauswahl
+    *  return render projectBase.html
+    */
+    function render() {
+
+        // Liest Tabelle SrvList aus und speichert Servernamen
+        $srv = new SrvList($this->db);
+        for ($srv->all(); !$srv->dry(); $srv->next()){
+            $datasrv[] = $srv->cast();
         }
-    
-    $this->f3->set('dataFromDb',$data);
+        if(count($datasrv)>0) {
+            foreach ($datasrv as $key => $value) {
+                $srvname[$value['id']] = $datasrv[$key];
+                $this->f3->set('srvs',$srvname);
+            }   
+        }
 
-    if(!$db->dry()) {
-        $valid=[];
-        $valid[]= "No Project exist!"; 
-    }
-    
-        $template=new Template;
-        $this->f3->set('header','header.html');
-        $this->f3->set('content','projectBase.html');
-        echo $template->render('base.html');
-    var_dump($srvname);
-    var_dump($data);    
+        // Liest DBList aus und erzeugt Liste der Projekte
+        $db = new DbList($this->db);
+        $count = 0;
+        $data = [];
+        
+            for ($db->all(); !$db->dry(); $db->next()){
+                $data[] = $db->cast();
+                $data[$count]['server'] = $srvname[$data[$count]['srvlist_id']]['server']; 
+                $data[$count]['username'] = $srvname[$data[$count]['srvlist_id']]['username']; 
+                $data[$count]['password'] = $srvname[$data[$count]['srvlist_id']]['password']; 
+                $pw = $this->decrypt($data[$count]['password']);
+                // Liefert Anzahl der vorhandenen Tabellen
+                if ($conn = create_con (
+                    $data[$count]['server'], 
+                    $data[$count]['username'], 
+                    $pw)) {
+                $data[$count]['tables'] = show_tables ($conn,$data[$count]['dbname'])->num_rows ?? 0;
+                }
+                // Liefert Anzahl der gespeicherten Formulare
+                // TODO:
+                $DbId = $data[$count][id];
+                $tbl = new TblList($this->db);
+                for ($tbl->load(array('dbid=?',$DbId)); !$tbl->dry(); $tbl->next()){
+                    $datatbl[$count][] = $tbl->cast();
+                }
+                $data[$count]['forms'] = count($datatbl[$count]);
+
+                $count ++;
+            }
+        
+        $this->f3->set('dataFromDb',$data);
+
+        if(!$db->dry()) {
+            $valid=[];
+            $valid[]= "No Project exist!"; 
+        }
+        
+            $template=new Template;
+            $this->f3->set('header','header.html');
+            $this->f3->set('content','projectBase.html');
+            echo $template->render('base.html');
+        var_dump($srvname);
+        var_dump($data);    
     }   
     
+    /**
+    *  Validiert und fügt Projekt zur DbList hinzu
+    *  return render	render
+    */
     function addPrjUsr() {
         $data = $this->f3->get('POST');
         $valid = Validate::is_valid($data, array(
@@ -89,10 +111,15 @@ class ProjectController extends Controller {
             exit;
     }
     
+    /**
+    *  Rendert Liste der Tabellen bzw. Formulare
+    *  param $f3	object 	Fatfree Opjekt
+    *  param $params	array	Array mit den GET Paarmetern
+    *  return render	formbase.html
+    */
     function showFrms ($f3,$params) {
-        // echo $params['id'];
+        // Kontrolliert ob für die Datenbank Zugangsdaten gespeichert sind
         $srv = new SrvList($this->db);
-        // $srv->getById($params['srvid']);
         $srv->load(array('id=?',$params['srvid']));
         $srv->copyTo('POST');
         if($srv->dry()) {
@@ -101,7 +128,6 @@ class ProjectController extends Controller {
             $this->f3->reroute('/showFrms/'.$params['srvid'].'/'.$params['id']); 
             exit;
         }
-
         $db = new DbList($this->db);
         $db->getById($params['id']);
         if($db->dry()) {
@@ -110,31 +136,31 @@ class ProjectController extends Controller {
             $this->f3->reroute('/showFrms/'.$params['srvid'].'/'.$params['id']);
             exit;
         }
-
-    $tbl = new TblList($this->db);
-    for ($tbl->load(array('dbid=?',$params['id'])); !$tbl->dry(); $tbl->next()){
-
-        $datatbl[] = $tbl->cast();
-    }
-
-    for ($srv; !$srv->dry(); $srv->next()){
-        $datasrv[] = $srv->cast();
-    }
-    for ($db; !$db->dry(); $db->next()){
-        $datadb[] = $db->cast();
-    }
-    
+        // Holt zugehörige Tabellendaten
+        $tbl = new TblList($this->db);
+        for ($tbl->load(array('dbid=?',$params['id'])); !$tbl->dry(); $tbl->next()){
+            $datatbl[] = $tbl->cast();
+        }
+        // Holt zugehörige Serverdaten
+        for ($srv; !$srv->dry(); $srv->next()){
+            $datasrv[] = $srv->cast();
+        }
+        // Holt zugehörige Datenbankdaten
+        for ($db; !$db->dry(); $db->next()){
+            $datadb[] = $db->cast();
+        }
         $this->f3->set('srvdata',$datasrv);
         $this->f3->set('dbdata',$datadb);
         $this->f3->set('tbldata',$datatbl);
-
+        //Richtet die Datenbankverbindung und liest Tabellen aus
         $pw = $this->decrypt($datasrv[0]['password']);
         // echo $datasrv[0]['server'], $datasrv[0]['username'], $pw, $datadb[0]['dbname'];
         $conn = create_con ($datasrv[0]['server'], $datasrv[0]['username'], $pw, $datadb[0]['dbname']);
         $result = show_tables($conn);
-        while ($row = $result->fetch_assoc()) {
+        while ($result->fetch_assoc()) {
+            foreach ($result as $key => $row) {
             $tables[$row['Tables_in_'.$datadb[0]['dbname']]] = [];
-            // $tables[$row['Tables_in_'.$datadb[0]['dbname']]] =
+            }
         }
         if(count($datatbl)>0) {
             foreach ($datatbl as $key => $value) {
@@ -143,16 +169,21 @@ class ProjectController extends Controller {
             }   
         }
         $this->f3->set('dataFromDb',$tables);
-
+        // render
         $template=new Template;
         $this->f3->set('header','header.html');
         $this->f3->set('content','formBase.html');
         echo $template->render('base.html');
+        //DEBUG
         echo '$tables';
         var_dump($tables);
-        var_dump($datatbl);    
+        var_dump($datafrm);    
     }
 
+    /**
+    *  Validiert und Speichert Formularname
+    *  return route	showFrms
+    */    
     function addFrm () {
         $data = $this->f3->get('POST');
         $valid = Validate::is_valid($data, array(
@@ -162,8 +193,6 @@ class ProjectController extends Controller {
             'formname' => 'required|alpha_dash',
         ));
         if($valid === true) {
-            // continue
-            // var_dump ($data);
             $tbl = new TblList($this->db);
             $tbl->dbid = $data['dblist_id'];
             $tbl->tablename = $data['tablename'];
@@ -176,8 +205,15 @@ class ProjectController extends Controller {
         $params['srvid'] = $data['srvlist_id'];
         $params['id'] = $data['dblist_id'];
         $this->showFrms($f3,$params); 
+        // TODO: (leere) Tabelle erzeugen
     }
 
+    /**
+    *  Löscht Formulareintrag
+    *  param $f3	object 	Fatfree Opjekt
+    *  param $params	array	Array mit den GET Paarmetern
+    *  return reroute	showFrms
+    */ 
     function delFrm ($f3,$params) {
         var_dump($params);
         $tbl = new TblList($this->db);
@@ -185,25 +221,35 @@ class ProjectController extends Controller {
         $this->f3->reroute('/showFrms/'.$params['srvid'].'/'.$params['dbid']);
     }
 
-
-
+    /**
+    *  Rendert Formular zur Formulardefinition
+    *  param $f3	object 	Fatfree Opjekt
+    *  param $params	array	Array mit den GET Paarmetern
+    *  return reroute	formFields.html
+    */ 
     function createFrm ($f3,$params) {
+        // Daten aus allen Tabellen einlesen
         $tbl = new TblList($this->db);
-        for ($tbl->getById($params['id']); !$tbl->dry(); $tbl->next()){
-            $datatbl[] = $tbl->cast();
-        }
-        $formname = $datatbl[0]['formname'];
-        $object[$formname] = $datatbl[0];
+            for ($tbl->getById($params['id']); !$tbl->dry(); $tbl->next()){
+                $datatbl[] = $tbl->cast();
+            }
+            $formname = $datatbl[0]['formname'];
+            // $object mit Infos aus TblList befüllen
+            $object[$formname] = $datatbl[0];
         $db = new DbList($this->db);
-        for ($db->getById($datatbl[0]['dbid']); !$db->dry(); $db->next()){
-            $datadb[] = $db->cast();
-        }
+            for ($db->getById($datatbl[0]['dbid']); !$db->dry(); $db->next()){
+                $datadb[] = $db->cast();
+            }
         $srv = new SrvList($this->db);
-        for ($srv->getById($datadb[0]['srvlist_id']); !$srv->dry(); $srv->next()){
-            $datasrv[] = $srv->cast();
-        }
+            for ($srv->getById($datadb[0]['srvlist_id']); !$srv->dry(); $srv->next()){
+                $datasrv[] = $srv->cast();
+            }
+        //$object mit Projektname und ServerID ergänzen
         $object[$formname]['projectname'] = $datadb[0]['projectname'];
         $object[$formname]['srvlist_id'] = $datadb[0]['srvlist_id'];
+        // Alle Tabellenfelder der Zieltabelle auslesen
+        // und an $object als fields anfügen
+        // Zusätzlich Counter als ID für Tabellenfelder einfügen
         $pw = $this->decrypt($datasrv[0]['password']);
         if ($conn = create_con ($datasrv[0]['server'], $datasrv[0]['username'], $pw, $datadb[0]['dbname'])) {
             $sql="SHOW FIELDS FROM ".$datatbl[0]['tablename'];
@@ -227,9 +273,7 @@ class ProjectController extends Controller {
                     $countid++;
                 }
             }
-
-
-            //foreign keys ermittel und $object den Fields hinzufügen
+            //foreign keys ermittel und $object den Fields asl refernce hinzufügen
             $sql="select
                 concat(table_name, '.', column_name) as 'foreign key', 
                 concat(referenced_table_name, '.', referenced_column_name) as 'references'
@@ -279,7 +323,7 @@ class ProjectController extends Controller {
                     }
                 }
             }
-            /* default wert zusammensetzen
+            /* default wert zusammensetzen und zu fields.auto anfügen
             TODO: 
                 Autowertform: auto_increment, Fixwert, Von Tabelle ...[Alle Tabellen der TB]
                 Inhalt: auto_increment, Felder zur Tabelle (Java), Wert.
@@ -309,14 +353,35 @@ class ProjectController extends Controller {
                 }
                 
             }
-        $this->f3->set('fields',$columns);
+        // Daten aus FrmList auslesen und in $object einbauen
+        $frm = new FrmList($this->db);
+            for ($frm->load(array('tbllist_id=?',$params['id'])); !$frm->dry(); $frm->next()){
+                $datafrm[] = $frm->cast();
+            }
+        foreach ($datafrm as $key => $value) {
+            $object[$formname]['fields'][$value['tbl_fieldname']]['fieldname'] = $value['fieldname'];
+            $object[$formname]['fields'][$value['tbl_fieldname']]['frmId'] = $value['id'];
+            //$value['field_id'];
+            $object[$formname]['fields'][$value['tbl_fieldname']]['type'] = $value['type'];
+            $object[$formname]['fields'][$value['tbl_fieldname']]['empty'] = $value['empty'];
+            $object[$formname]['fields'][$value['tbl_fieldname']]['field_key'] = $value['field_key'];
+            $object[$formname]['fields'][$value['tbl_fieldname']]['autowert'] = explode(",",$value['autowert']);
+            $object[$formname]['fields'][$value['tbl_fieldname']]['sort'] = $value['sort'];
+            $object[$formname]['fields'][$value['tbl_fieldname']]['field_hide'] = $value['field_hide'];
+        }
+
+        // render
         $this->f3->set('object',$object);
         $template=new Template;
         $this->f3->set('header','header.html');
         $this->f3->set('content','formFields.html');
         echo $template->render('base.html');
+        //DEBUG
             ini_set('xdebug.var_display_max_depth', '10');
+            echo '$datadb';
             var_dump($datadb);
+            echo '$datafrm';
+            var_dump($datafrm[0]);
             echo '$object';
             var_dump($object);
 
@@ -369,21 +434,30 @@ class ProjectController extends Controller {
         foreach ($data As $key => $value) {
             // echo $key.'='.$value.'<br>';
             if(is_array($value)) {
-            $form->tbllist_id = $params['id'];
-            $form->field_id = $key;
-            $form->tbl_fieldname = $value['tbl_fieldname'];
-                // if ($value[1] == ''){
-                //     $value[1] = $value[0];
-                // }       
-            $form->fieldname = $value['fieldname'];
-            $form->type = $value['type'];
-            $form->empty = $value['empty'];
-            $form->field_key = $value['field_value'];
-            $form->sort = $value['sort'];
-            $form->autowert = $value['autowert'];
-            $form->field_hide = $value['field_show'];
-            $form->save();
-            $form->reset();
+                if($value['id']) {
+                    $form->id = $value['id'];
+                }
+                $form->tbllist_id = $params['id'];
+                $form->field_id = $key;
+                $form->tbl_fieldname = $value['tbl_fieldname'];
+                $form->fieldname = $value['fieldname'];
+                $form->type = $value['type'];
+                $form->empty = $value['empty'];
+                $form->field_key = $value['field_key'];
+                $form->sort = $value['sort'];
+                $autowert = $value['Autowert'];
+                if (is_array($value['Autowert'])) {
+                $autowert = implode(",",$value['Autowert']);
+                }
+                $form->autowert = $autowert;
+                
+                $form->field_hide = $value['field_hide'];
+                if($value['id']) {
+                    $form->update();
+                } else {
+                    $form->save();
+                }
+                $form->reset();
             }
         }
         //create and export config
@@ -423,9 +497,9 @@ class ProjectController extends Controller {
         export_file ($filename,$path,$export,$format);
         $source = $root.'\\app\\blueprints\\form';
         // TODO: wieder aktivieren DEBUG
-        // var_dump($_POST);
+        var_dump($_POST);
         // $files = xcopy($source, $path);
-        $this->f3->reroute('/createFrm/'.$params['id']);
+        // $this->f3->reroute('/createFrm/'.$params['id']);
     }
 
     function setFieldType($data) {
@@ -502,13 +576,41 @@ class ProjectController extends Controller {
         return $value;
 
     }
+
+    /**
+    *  Verschlüsselt $token mit vorgebenen ENCRYPTION_KEY.
+    *  twoway encryption
+    *  param    $token  string  Zu verschlüsselnder String
+    *  return   string  verschlüsselter Token
+    */
     function encrypt($token) {
         $cryptor = new Cryptor($this->f3->get('ENCRYPTION_KEY'));
         return $cryptor->encrypt($token);
     }
+
+    /**
+    *  Entschlüsselt $token mit vorgebenen ENCRYPTION_KEY.
+    *  twoway encryption
+    *  param    $token  string  verschlüsselter String
+    *  return   string  entschlüsselter Token
+    */
     function decrypt($crypted_token) {
         $cryptor = new Cryptor($this->f3->get('ENCRYPTION_KEY'));
         // echo $encryption_key;
         return $cryptor->decrypt($crypted_token);
     }
+
+    /**
+    *  Liefer die passende ServerId zur DbListId
+    *  param $DbId	int	Datenbank = Projekt Id
+    *  return Int	ServerId
+    */
+    function getSrvIDfromDbId ($DbId) {
+        $db = new DbList($this->db);
+		for ($db->load(array('id=?',$DbId)); !$db->dry(); $db->next()){
+            $datadb[] = $db->cast();
+        }
+        return $datadb[0]['srvlist_id'];
+    }
+
 }

@@ -7,7 +7,7 @@
       <th>Projektname</th>
       <th>Anzahl<br>Tabellen</th>
       <th>Anzahl<br>Formulare</th>
-      <th>Projektdaten<br>bearbeiten</th>
+      <!--<th>Projektdaten<br>bearbeiten</th>-->
       <th>Formulare<br>bearbeiten</th>
   </tr>
   <tr>
@@ -16,8 +16,8 @@
     <td>{{ @idiv.dbname }}</td>
     <td>{{ @idiv.projectname }}</td>
     <td>{{ @idiv.tables }}</td>
-    <td>0</td>
-    <td><span class="glyphicon glyphicon-pencil green-symb" aria-hidden="true"></td>
+    <td>{{ @idiv.forms }}</td>
+    <!--<td><span class="glyphicon glyphicon-pencil green-symb" aria-hidden="true"></td>-->
     <td><a href="/showFrms/{{ @idiv.srvlist_id }}/{{ @idiv.id }}"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></td>
   </tr>
 </repeat>
@@ -26,14 +26,13 @@
             <td>
               <select class="form-control" name="srvlist_id">
                   <repeat group="{{ @srvs }}" key="{{ @ikeysrv }}" value="{{ @idivsrv }}">
-              <option value={{ @ikeysrv }}>{{ @idivsrv.server }}</option>
+              <option value={{ @ikeysrv }}>{{ @idivsrv.server }}({{ @idivsrv.username }})</option>
+                </repeat>
               </select>
             </td>
             <td><input type="text" class="form-control" id="DbName" name="dbname" placeholder="Datenbankname"></td>
             <td><input type="text" class="form-control" id="PrjName" name="projectname" placeholder="Projektname" >
             </td>
-            <td></td>
-            <td></td>
             <td><button type="submit" class="btn btn-default" aria-label="Left Align"><span class="glyphicon glyphicon-plus green-symb" aria-hidden="true"></span></button></td>
         </tr>
 </form>

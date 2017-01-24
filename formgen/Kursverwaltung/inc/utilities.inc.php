@@ -100,6 +100,7 @@ function makeFormFields($conf, $errors, $type) {
 *	@param 
 *	@return string Gerendertes Formularfeld
 */
+
 function makeFormField($fieldName, $fieldConf, $type, $error = NULL) {
 	$formField = '';
 	switch ($fieldConf['fieldType']) {
@@ -120,9 +121,7 @@ function makeFormField($fieldName, $fieldConf, $type, $error = NULL) {
 			$formField .=  '</div>'	;
 			break;
 	}
-
 return $formField;
-
 }
 
 function makeFormFieldOptions($fieldName, $fieldConf, $type) {
