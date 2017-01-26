@@ -1,5 +1,8 @@
 <?php
-
+/**
+*   Child class des Controller(f3)
+*   Steuert alle Projektfunktionen
+*/
 class ProjectController extends Controller {
 
     /**
@@ -209,6 +212,31 @@ class ProjectController extends Controller {
     }
 
     /**
+    *  Validiert und Ändert Formularname
+    *  return route	showFrms
+    */    
+    function editFrm () {
+        $data = $this->f3->get('POST');
+        var_dump($_POST);
+        $valid = Validate::is_valid($data, array(
+            'tablename' => 'required|alpha_dash',
+            'formname' => 'required|alpha_dash',
+        ));
+        if($valid === true) {
+            $tbl = new TblList($this->db);
+            $tbl->getByName($data['tablename']);
+            $tbl->copyFrom('POST');
+            $tbl->update();   
+        } else {
+            $this->f3->set('validfrm',$valid);
+            $id['id'] = $data['id'];
+        }
+        $params['srvid'] = $data['srvlist_id'];
+        $params['id'] = $data['dblist_id'];
+        $this->showFrms($f3,$params); 
+        // // TODO: (leere) Tabelle erzeugen
+    }
+    /**
     *  Löscht Formulareintrag
     *  param $f3	object 	Fatfree Opjekt
     *  param $params	array	Array mit den GET Paarmetern
@@ -381,7 +409,7 @@ class ProjectController extends Controller {
             echo '$datadb';
             var_dump($datadb);
             echo '$datafrm';
-            var_dump($datafrm[0]);
+            var_dump($datafrm[4]);
             echo '$object';
             var_dump($object);
 
@@ -391,6 +419,12 @@ class ProjectController extends Controller {
         }
     }
 
+    /**
+    *  Speichert Formulardefinition und Exportiert $formConfigAll[]
+    *  param $f3	object 	Fatfree Opjekt
+    *  param $params	array	Array mit den GET Paarmetern
+    *  return route	createFrm
+    */ 
     function saveFrm ($f3,$params) {
             ini_set('xdebug.var_display_max_depth', '10');
         $tbl = new TblList($this->db);
@@ -405,14 +439,6 @@ class ProjectController extends Controller {
             for ($srv->getById($datadb[0]['srvlist_id']); !$srv->dry(); $srv->next()){
             $datasrv[] = $srv->cast();
             }
-        // echo '$datatbl';
-        // var_dump($datatbl);
-        // echo '$datadb';
-        // var_dump($datadb);
-        // echo '$datasrv';
-        // var_dump($datasrv);
-        // echo '$params';
-        // var_dump($params);
         
         $data = $this->f3->get('POST');
         // var_dump($data);
@@ -433,27 +459,30 @@ class ProjectController extends Controller {
   		$form = new FrmList($this->db);
         foreach ($data As $key => $value) {
             // echo $key.'='.$value.'<br>';
+            $_POST = NULL;
             if(is_array($value)) {
                 if($value['id']) {
-                    $form->id = $value['id'];
+                    $_POST['id'] = $value['id'];
                 }
-                $form->tbllist_id = $params['id'];
-                $form->field_id = $key;
-                $form->tbl_fieldname = $value['tbl_fieldname'];
-                $form->fieldname = $value['fieldname'];
-                $form->type = $value['type'];
-                $form->empty = $value['empty'];
-                $form->field_key = $value['field_key'];
-                $form->sort = $value['sort'];
+                $_POST['tbllist_id'] = $params['id'];
+                $_POST['field_id'] = $key;
+                $_POST['tbl_fieldname'] = $value['tbl_fieldname'];
+                $_POST['fieldname'] = $value['fieldname'];
+                $_POST['type'] = $value['type'];
+                $_POST['empty'] = $value['empty'];
+                $_POST['field_key'] = $value['field_key'];
+                $_POST['sort'] = $value['sort'];
                 $autowert = $value['Autowert'];
                 if (is_array($value['Autowert'])) {
                 $autowert = implode(",",$value['Autowert']);
                 }
-                $form->autowert = $autowert;
+                $_POST['autowert'] = $autowert;
                 
-                $form->field_hide = $value['field_hide'];
+                $_POST['field_hide'] = $value['field_hide'];
                 if($value['id']) {
-                    $form->update();
+                    // echo $key;
+                    // var_dump($_POST);
+                    $form->edit($value['id']);
                 } else {
                     $form->save();
                 }
@@ -473,7 +502,8 @@ class ProjectController extends Controller {
                 if ($value['field_key']=='PRI') {
                     $export['primary'] = $value['tbl_fieldname'];
                 }    
-                if ($value['Autowert'] != 'auto_increment') {
+                if ($value['Autowert'] != 'auto_increment' &&
+                    $value['field_hide'] != 1) {
                     $export['fields'][$value['tbl_fieldname']]['fieldType'] = $this->setFieldType($value);
                     $export['fields'][$value['tbl_fieldname']]['label'] = $this->setFieldName($value);
                     $export['fields'][$value['tbl_fieldname']]['dbName'] = $value['tbl_fieldname'];
@@ -498,10 +528,15 @@ class ProjectController extends Controller {
         $source = $root.'\\app\\blueprints\\form';
         // TODO: wieder aktivieren DEBUG
         var_dump($_POST);
-        // $files = xcopy($source, $path);
-        // $this->f3->reroute('/createFrm/'.$params['id']);
+        $files = xcopy($source, $path);
+        $this->f3->reroute('/createFrm/'.$params['id']);
     }
 
+/**
+*  Erzeugt Feldtyp für formConfigAll[]
+*  param $data	array	Feldkonfiguration
+*  return string	Html Input Type
+*/
     function setFieldType($data) {
         // varchar -> text
         $value = 'text';
@@ -513,6 +548,14 @@ class ProjectController extends Controller {
         if ($data['type'] == 'date') {
             $value = 'date';
         }
+        // type = datetime -> Kalender
+        if ($data['type'] == 'datetime') {
+            $value = 'datetime';
+        }
+        // type = timestamp -> Kalender
+        if ($data['type'] == 'timestamp') {
+            $value = 'datetime';
+        }
         // bool -> checkbox
         if ($data['type'] == 'tinyint(1)') {
             $value = 'checkbox';
@@ -523,6 +566,12 @@ class ProjectController extends Controller {
         }
         return $value;
     }
+
+/**
+*  Erzeugt Datatyp zur Validierung für formConfigAll[]
+*  param $data	array	Feldkonfiguration
+*  return string	dataType zur Validierung
+*/
     function setDataType($data) {
         $value = 'text';
         if (stristr($data['type'], 'int')) {
@@ -535,10 +584,21 @@ class ProjectController extends Controller {
         if ($data['type'] == 'date') {
             $value = 'date';
         }
+        // type = datetime -> Kalender
+        if ($data['type'] == 'datetime' ||
+            $data['type'] == 'timestamp') {
+            $value = 'datetime';
+        }
         //email, regex
         return $value;
 
     }
+
+/**
+*  Erzeugt Feldnamen für formConfigAll[]
+*  param $data	array	Feldkonfiguration
+*  return string	Feldname
+*/
     function setFieldName($data) {
         $value = $data['fieldname'];
 
@@ -548,6 +608,12 @@ class ProjectController extends Controller {
         return $value;
 
     }
+
+/**
+*  Erzeugt Required für formConfigAll[]
+*  param $data	array	Feldkonfiguration
+*  return string	Required
+*/
     function setRequired($data) {
         $value = false;
         if ($data['empty'] == 'NO') {
@@ -557,9 +623,15 @@ class ProjectController extends Controller {
         return $value;
 
     }
+
+/**
+*  Erzeugt AutoValue für formConfigAll[]
+*  param $data	array	Feldkonfiguration
+*  return string	Autovalue
+*/
     function setAutoValue($data) {
         $value = '';
-    if (!stristr($data['Autowert'][0], '[')) {
+        if (!stristr($data['Autowert'][0], '[')) {
             $value = $data['Autowert'];
         } else {
             $value = "[".$data['reference']."]";
@@ -570,6 +642,11 @@ class ProjectController extends Controller {
         return $value;
     }
 
+/**
+*  Erzeugt Feldnamen für formConfigAll[]
+*  param $data	array	Feldkonfiguration
+*  return string	Feldname
+*/
     function setXXX($data) {
         $value = 'text';
 

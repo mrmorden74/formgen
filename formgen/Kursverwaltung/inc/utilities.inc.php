@@ -64,7 +64,6 @@ function getLinks() {
     } 
 } 
 
-
 /**
 *	Fügt pre Tag um var_dump ein
 *	@param $val mixed
@@ -80,7 +79,7 @@ function dumpPre($val) {
 *	@param $conf array
 *	@param $errors array
 *	@param $type string TODO update oder insert; Gleichzeitig Label des Button
-*   @return string 
+*   @return string Formularfelder
 */
 function makeFormFields($conf, $errors, $type) {
 		$formFields =  '<div class="container">';
@@ -97,10 +96,12 @@ function makeFormFields($conf, $errors, $type) {
 
 /**
 *	Entscheidet welcher Formularfeldtyp verwendet wird
-*	@param 
+*	@param $fieldName string Formularfeldname
+*	@param $fieldConf array Feldkonfiguration
+*	@param $type string update oder insert; Gleichzeitig Label des Button
+*	@param $error Fehlermeldung nach Validierung
 *	@return string Gerendertes Formularfeld
 */
-
 function makeFormField($fieldName, $fieldConf, $type, $error = NULL) {
 	$formField = '';
 	switch ($fieldConf['fieldType']) {
@@ -121,9 +122,16 @@ function makeFormField($fieldName, $fieldConf, $type, $error = NULL) {
 			$formField .=  '</div>'	;
 			break;
 	}
-return $formField;
+	return $formField;
 }
 
+/**
+*	Geneiert die Optionen für Select Box
+*	@param $fieldName string Formularfeldname
+*	@param $fieldConf array Feldkonfiguration
+*	@param $type string update oder insert; Gleichzeitig Label des Button
+*	@return string Optionen für Select
+*/
 function makeFormFieldOptions($fieldName, $fieldConf, $type) {
 
 	$setValue = makeFormFieldValue($fieldName, $fieldConf, $type);
@@ -166,8 +174,14 @@ function makeFormFieldOptions($fieldName, $fieldConf, $type) {
 	return $options;
 }
 
+/**
+*	Erzeugt Label für Inputfelder des Formulars
+*	@param $fieldName string Formularfeldname
+*	@param $fieldConf array Feldkonfiguration
+*	@return string Label String
+*/
 function makeFormFieldLabel($fieldName, $fieldConf) {
-// LABEL START
+	// LABEL START
 		$label = '<label for="'.$fieldName.'">'.$fieldConf['label']; // id-Name und sichtbarer Name des Eingabefelds
 	if ($fieldConf['required'] === true) {
 		$label .= "*";		
@@ -176,10 +190,16 @@ function makeFormFieldLabel($fieldName, $fieldConf) {
 		$label .=  '<span class="error"> --> '.$error.'</span>'; // Fügt wenn vorhanden FehlerMeldung hinzu
 	}
 		$label .= '</label>';
-// LABEL ENDE
-return $label;
+	// LABEL ENDE
+	return $label;
 }
 
+/**
+*	Baut Prefix bei Formularfeldern ein
+*	@param $fieldName string Formularfeldname
+*	@param $fieldConf array Feldkonfiguration
+*	@return string Prefix string
+*/
 function makeFormFieldPrefix($fieldName, $fieldConf) {
 	$prefix = '';
 	if (isset($fieldConf['preFix'])){
@@ -188,6 +208,14 @@ function makeFormFieldPrefix($fieldName, $fieldConf) {
 	return $prefix;
 }
 
+/**
+*	Erzeugt Inputfelder für Inputfelder des Formulars
+*	@param $fieldName string Formularfeldname
+*	@param $fieldConf array Feldkonfiguration
+*	@param $type string update oder insert; Gleichzeitig Label des Button
+*	@param $error Fehlermeldung nach Validierung
+*	@return string Input String
+*/
 function makeFormFieldInput($fieldName, $fieldConf, $type, $error = NULL) {
 		$input = '<input type="'.$fieldConf['fieldType'].'"'; // Art des EIngabefeldes
 		$input .= ' class="form-control" '; // CSS 
@@ -213,6 +241,14 @@ function makeFormFieldInput($fieldName, $fieldConf, $type, $error = NULL) {
 
 	return $input;
 }
+
+/**
+*	Liefert Value für Inputfeld des Formulars
+*	@param $fieldName string Formularfeldname
+*	@param $fieldConf array Feldkonfiguration
+*	@param $type string update oder insert; Gleichzeitig Label des Button
+*	@return string Value für Formularfeld
+*/
 function makeFormFieldValue($fieldName, $fieldConf, $type) {
 	$value = '';
 	if (count($_POST)>0 && !validate_empty($_POST[$fieldName])) {
@@ -407,6 +443,7 @@ function validate_int($val) {
 
 	return true;
 }
+
 /**
 *	Validiert, ob $val vom Typ float ist
 *	@param $val mixed
@@ -423,37 +460,39 @@ function validate_float($val) {
 */
 function validate_name($val) {
  $chars = '!?"§$%&/()=°^²³{[]}@€#|<>*-+,.;:-_\\~';
-return !search_charinstr($val,$chars);
+	return !search_charinstr($val,$chars);
 }
 
 /**
-*	Validiert, ob $val keine für Namen ungültige Zeichen !?"§$%&/()=°^²³{[]}@€#|<>*-+,.;:-_\~ enthält
+*	Validiert, ob $val gültiges Passwort enthält
 *	@param $val string
 *	@return boolean
 */
 function validate_pw($val) {
-if (preg_match("`[A-Z]`", $val) &&
-	preg_match("`[a-z]`", $val) &&
-	preg_match("`[0-9]`", $val) &&
-	preg_match("'[^A-Za-z0-9]'", $val)) {
-//    echo 'String enthält auch andere Zeichen.'; 
-   return true; 
-} 
-   return false; 
+	if (preg_match("`[A-Z]`", $val) &&
+		preg_match("`[a-z]`", $val) &&
+		preg_match("`[0-9]`", $val) &&
+		preg_match("'[^A-Za-z0-9]'", $val)) {
+	//    echo 'String enthält auch andere Zeichen.'; 
+	return true; 
+	} 
+   	return false; 
 }
+
 /**
-*	Validiert, ob $val keine für Namen ungültige Zeichen !?"§$%&/()=°^²³{[]}@€#|<>*-+,.;:-_\~ enthält
+*	Validiert, ob $val gültige Kundennummer enthält
 *	@param $val string
 *	@return boolean
 */
 function validate_kdnr($val) {
-if (preg_match("`KdNr-`", $val) &&
-	preg_match("`[0-9]`", $val)) {
-//    echo 'String enthält auch andere Zeichen.'; 
-   return true; 
-} 
+	if (preg_match("`KdNr-`", $val) &&
+		preg_match("`[0-9]`", $val)) {
+	//    echo 'String enthält auch andere Zeichen.'; 
+	return true; 
+	} 
    return false; 
 }
+
 /**
 *	Validiert, ob $val eines der Zeichen aus $chars enthält
 *	@param $val string
@@ -468,7 +507,7 @@ function search_charinstr($val,$chars) {
 		return true;
 		}
 	}
-return false;
+	return false;
 }
 
 /**
@@ -477,11 +516,11 @@ return false;
 *	@return boolean
 */
 function validate_phone($val) {
-if (!preg_match("#^[0-9 +]+$#", $val)) {
-//    echo 'String enthält auch andere Zeichen.'; 
-   return false; 
-} 
-   return true; 
+	if (!preg_match("#^[0-9 +]+$#", $val)) {
+	//    echo 'String enthält auch andere Zeichen.'; 
+	return false; 
+	} 
+	return true; 
 }
 
 /**
@@ -494,7 +533,6 @@ function validate_minLength($val,$length) {
 	if (strlen(trim($val)) < $length) {
 		return false;
 	}
-
 	return true;
 }
 
@@ -568,15 +606,15 @@ function validate_formTxt($val,$format) {
    		return true; 
 	} 
    		return false; 
-	}
+}
 
 /**
 *	Erzeugt Sql Insert auf Basis der config Datei
-*	@param $conf array
+*	@param $confall array
 *	@return string sql-Statement
 */
 function sql_insert($confall) {
-// neu in PHP 7: non coallescing operator: wenn $_GET != NULL ist und Wert hat, sonst ...
+	// neu in PHP 7: non coallescing operator: wenn $_GET != NULL ist und Wert hat, sonst ...
 	$conf = $confall['fields'];
 	// Validierung, vorläufig ist alles OK
 	$sql = 'INSERT INTO '.$confall['tblname'].' SET ' ;
@@ -592,15 +630,16 @@ function sql_insert($confall) {
 		$komma = ", ";
 	}
 	$sql .= ';';
-return $sql;			
+	return $sql;			
 }
+
 /**
 *	Erzeugt Sql Update auf Basis der config Datei
-*	@param $conf array
+*	@param $confall array
 *	@return string sql-Statement
 */
 function sql_update($confall) {
-// neu in PHP 7: non coallescing operator: wenn $_GET != NULL ist und Wert hat, sonst ...
+	// neu in PHP 7: non coallescing operator: wenn $_GET != NULL ist und Wert hat, sonst ...
 	$conf = $confall['fields'];
 	// Validierung, vorläufig ist alles OK
 	$sql = 'UPDATE '.$confall['tblname'].' SET ' ;
@@ -617,13 +656,13 @@ function sql_update($confall) {
 	}
 	$sql .= 'WHERE '.$confall['primary'].' = '.$_GET['edit'];
 	$sql .= ';';
-return $sql;			
+	return $sql;			
 }
+
 /**
 *	Erzeugt Autowert
 *	@param $fieldName string Name des Feldes, welches mittels autoincrediment befüllt werden soll
-*	@param $def string (STart,Länge,Wert wieder in Text einbauen j/n)
-*	@param $data ??? Woher
+*	@param $fieldConf array Konfigurationsdaten des Formularfeldes
 *	@return mixed
 */
 function getAutowert($fieldName, $fieldConf) {
@@ -656,7 +695,6 @@ function getAutowert($fieldName, $fieldConf) {
 			$value = '';
 			break;
 	}
-
 	return $value;
 }
 

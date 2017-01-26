@@ -52,6 +52,12 @@ body {
 .green-symb {
   color: darkgreen;
 }
+.red-symb {
+  color: red;
+}
+.blue-symb {
+  color: blue;
+}
 
 .left-symb {
   text-align: right;

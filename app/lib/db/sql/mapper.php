@@ -470,14 +470,14 @@ class Mapper extends \DB\Cursor {
 			if ($field['pkey']) {
 				$filter.=($filter?' AND ':' WHERE ').
 					$this->db->quotekey($key).'=?';
-				$args[++$ctr]=[$args[1][0],$field['pdo_type']];
-				// $args[++$ctr]=[$field['previous'],$field['pdo_type']];
+				// $args[++$ctr]=[$args[1][0],$field['pdo_type']];
+				$args[++$ctr]=[$field['previous'],$field['pdo_type']];
 				// echo $ctr;
 			}
 		if ($pairs) {
 			$sql='UPDATE '.$this->table.' SET '.$pairs.$filter;
-			// echo $sql.'<br>';
-			// var_dump ($args);
+			echo $sql.'<br>';
+			var_dump ($args);
 			$this->db->exec($sql,$args);
 			if (isset($this->trigger['afterupdate']))
 				\Base::instance()->call($this->trigger['afterupdate'],

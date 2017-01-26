@@ -1,5 +1,8 @@
 <?php
-
+/**
+*   Child class des Controller(f3)
+*   Steuert alle Admintools
+*/
 class AdminController extends Controller {
     /**
     *  Aufruf des Formulars zur Benutzereingabe     
@@ -503,10 +506,8 @@ class AdminController extends Controller {
     function editPrj($f3,$id) {
         $data = $this->f3->get('POST');
         $valid = Validate::is_valid($data, array(
-            'dbname' => 'required',
-            'projectname' => 'required',
-            'username' => 'required|max_len,20|min_len,4',
-            'password' => 'max_len,20',
+            'dbname' => 'required|alpha_numeric',
+            'projectname' => 'required|alpha_numeric',
         ));
         $this->f3->POST['password'] = $this->encrypt($this->f3->POST['password']);
 
@@ -527,6 +528,18 @@ class AdminController extends Controller {
             }
 		$db->edit($id['id']);
         $srvId = $this->getSrvIDfromDbId ($id['id']);
+        //dbconfig exportieren
+        $path = $this->f3->get('ROOT');
+        $srv = new SrvList($this->db);
+            for ($srv->getById($srvId); !$srv->dry(); $srv->next()){
+                $datasrv[] = $srv->cast();
+            }
+            $datasrv[0]['dbname'] = $data['dbname'];
+            $datasrv[0]['projectname'] = $data['projectname'];
+            $datasrv[0]['dblist_id'] = $data['id'];
+
+        $create = create_folder($path, $datasrv[0]);
+
         $this->f3->reroute('/addPrj/'.$srvId);
     }
 

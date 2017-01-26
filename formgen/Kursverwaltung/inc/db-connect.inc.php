@@ -26,26 +26,45 @@ function connectDB(string $user, string $pw, string $host, string $db) : mysqli 
 	return $mysqli;
 }
 
+/**
+*  Holt sich Zugangsdaten aus der dbconfig
+*  return array Zugangsdaten
+*/
 function getConDb() {
 	$string = explode(',', file_get_contents('../config/dbconfig.csv', true));
 	// var_dump ($string);
- return array(
-	"user" => $string[3]  ,
-  	"pw" => $string[4]  ,
-	"host" => $string[1]  ,
-	"db" => $string[5]  
+	return array(
+		"user" => $string[3]  ,
+  		"pw" => $string[4]  ,
+		"host" => $string[1]  ,
+		"db" => $string[5]  
 	);
 }
+
+/**
+*  Holt sich Projektname aus der dbconfig
+*  return string Projektname
+*/
 function getProjectName() {
 	$string = explode(',', file_get_contents('../config/dbconfig.csv', true));
 	// var_dump ($string);
- return $string[6];
+ 	return $string[6];
 }
+
+/**
+*  Holt sich ServerId aus der dbconfig
+*  return string ServerId
+*/
 function getSrvId() {
 	$string = explode(',', file_get_contents('config/dbconfig.csv', true));
 	// var_dump ($string);
  return $string[0];
 }
+
+/**
+*  Holt sich DatenbankId aus der dbconfig
+*  return string DatenbankId
+*/
 function getDbId() {
 	$string = explode(',', file_get_contents('config/dbconfig.csv', true));
 	// var_dump ($string);

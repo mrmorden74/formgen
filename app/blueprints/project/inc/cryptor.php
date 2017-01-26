@@ -1,7 +1,7 @@
 <?php
 // Original PHP code by Chirp Internet: www.chirp.com.au
 // Please acknowledge use of this code by including this header.
-
+// Klasse zur twoway Verschlüsselung
 class Cryptor
 {
 

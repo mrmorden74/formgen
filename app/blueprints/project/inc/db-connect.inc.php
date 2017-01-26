@@ -8,12 +8,9 @@
 *
 */
 function connectDB(string $user, string $pw, string $host, string $db) : mysqli {
-	
-	 echo 'connect: ', $user,'-', $pw,'-', $host,'-', $db;
-	echo '1:'.$pw;
-	$pw = decrypt($pw);
-	echo '2:'.$pw;
 
+	$pw = decrypt($pw);	
+	// echo 'connect: ', $user,'-', $pw,'-', $host,'-', $db;
 	$mysqli = new mysqli($host, $user, $pw, $db);
 	// var_dump($mysqli->connect_errno);
 	if ($mysqli->connect_errno) {
@@ -30,42 +27,70 @@ function connectDB(string $user, string $pw, string $host, string $db) : mysqli 
 	return $mysqli;
 }
 
+/**
+*  Holt sich Zugangsdaten aus der dbconfig
+*  return array Zugangsdaten
+*/
 function getConDb() {
 	$string = explode(',', file_get_contents('../config/dbconfig.csv', true));
 	// var_dump ($string);
-	$string[4] = decrypt($string[4]);
- return array(
-	"user" => $string[3]  ,
-  	"pw" => $string[4]  ,
-	"host" => $string[1]  ,
-	"db" => $string[5]  
+	return array(
+		"user" => $string[3]  ,
+  		"pw" => $string[4]  ,
+		"host" => $string[1]  ,
+		"db" => $string[5]  
 	);
 }
+
+/**
+*  Holt sich Projektname aus der dbconfig
+*  return string Projektname
+*/
 function getProjectName() {
 	$string = explode(',', file_get_contents('../config/dbconfig.csv', true));
 	// var_dump ($string);
- return $string[6];
+ 	return $string[6];
 }
+
+/**
+*  Holt sich ServerId aus der dbconfig
+*  return string ServerId
+*/
 function getSrvId() {
 	$string = explode(',', file_get_contents('config/dbconfig.csv', true));
 	// var_dump ($string);
  return $string[0];
 }
+
+/**
+*  Holt sich DatenbankId aus der dbconfig
+*  return string DatenbankId
+*/
 function getDbId() {
 	$string = explode(',', file_get_contents('config/dbconfig.csv', true));
 	// var_dump ($string);
  return $string[7];
 }
+
+    /**
+    *  Verschlüsselt $token mit vorgebenen ENCRYPTION_KEY.
+    *  twoway encryption
+    *  param    $token  string  Zu verschlüsselnder String
+    *  return   string  verschlüsselter Token
+    */
 function encrypt($token) {
-	$cryptor = new Cryptor('CKXH2U9RPY3EFD70TLS1ZG4N8WQBOVI6AMJ5');
+	$cryptor = new Cryptor("'CKXH2U9RPY3EFD70TLS1ZG4N8WQBOVI6AMJ5';");
 	return $cryptor->encrypt($token);
 }
+
+    /**
+    *  Entschlüsselt $token mit vorgebenen ENCRYPTION_KEY.
+    *  twoway encryption
+    *  param    $token  string  verschlüsselter String
+    *  return   string  entschlüsselter Token
+    */
 function decrypt($crypted_token) {
-	$cryptor = new Cryptor('CKXH2U9RPY3EFD70TLS1ZG4N8WQBOVI6AMJ5');
-	// echo $encryption_key;
+	$cryptor = new Cryptor("'CKXH2U9RPY3EFD70TLS1ZG4N8WQBOVI6AMJ5';");
 	return $cryptor->decrypt($crypted_token);
 }
-
-
-
 ?>
