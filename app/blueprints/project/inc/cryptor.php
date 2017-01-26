@@ -1,7 +1,7 @@
 <?php
 // Original PHP code by Chirp Internet: www.chirp.com.au
 // Please acknowledge use of this code by including this header.
-
+// Klasse zur twoway Verschlüsselung
 class Cryptor
 {
 
@@ -17,18 +17,14 @@ class Cryptor
   {
     if(!$key) {
       // if you don't supply your own key, this will be the default
-      // echo 'test'.'<br>';
       $key = gethostname() . "|" . ip2long($_SERVER['SERVER_ADDR']);
     }
     if(ctype_print($key)) {
       // convert key to binary format
-      // echo '--'.$key.'--Key<br>';
       $this->key = openssl_digest($key, 'SHA256', true);
-      // echo $this->key.'-BIN Key<br>';
     } else {
       $this->key = $key;
     }
-    // echo $this->key.'<br>';
     if($method) {
       if(in_array($method, openssl_get_cipher_methods())) {
         $this->method = $method;
@@ -57,14 +53,9 @@ class Cryptor
     //   echo 'OK'.'<br>';
       list(, $iv, $crypted_string) = $regs;
       $decrypted_string = openssl_decrypt($crypted_string, $this->method, $this->key, 0, hex2bin($iv));
-      // echo $crypted_string.'-Cypted<br>';
-      // echo $this->method.'-Method<br>';
-      // echo $this->key.'<br>';
-      // echo $iv.'<br>';
-      // echo 'decrypted: '.$decrypted_string.'<br>';
+      // echo 'decrypted: '.$decrypted_string;
       return $decrypted_string;
     } else {
-      echo 'test';
       return false;
     }
   }

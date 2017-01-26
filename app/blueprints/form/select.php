@@ -18,7 +18,9 @@ if ($res->num_rows) {
 		if ($rowNr === 0) {
 			echo '<thead><tr>'	;
 			foreach($line as $key => $val) {
-				echo '<th>',dbToLabelName($key, $formConfig),'</th>';
+				if ($label = dbToLabelName($key, $formConfig)) {
+					echo '<th>',$label,'</th>';
+				}
 			}
 			echo '<th> </th><th> </th></tr></thead><tbody>';	
 			$rowNr = 1;
@@ -26,7 +28,9 @@ if ($res->num_rows) {
 // Datenzeilen erzeugen
 	echo '<tr>'	;
 		foreach($line as $key => $val) {
-			echo '<td>',$val,'</td>';
+			if ($label = dbToLabelName($key, $formConfig)) {
+				echo '<td>',getVal($key, $val, $formConfig[$key]),'</td>';
+			}
 		}
 	echo '<td>';	
 	echo '<a href="index.php?edit=', $line[$formConfigAll['primary']], '"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></a>';

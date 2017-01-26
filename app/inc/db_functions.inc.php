@@ -2,19 +2,28 @@
     // Verbindung testen
     // Create connection
 function create_con ($server, $user, $pwd, $db = NULL, $port = 3306) {
+    set_error_handler("customError");     
     $conn = new mysqli($server, $user, $pwd, $db, $port);
     // Check connection
     if ($conn->connect_error) {
         //TODO errorhandling doesn't work'
-        $valid=[];
-        $valid[]= "Connection failed: " . $conn->connect_error; 
-        $f3->set('validdb',$valid);;
+        // $valid=[];
+        // $valid[]= "Connection failed: " . $conn->connect_error; 
+        // $f3->set('validdb',$valid);;
         // $this->addDbForm(); 
         return false;
     }
 	return $conn;
 } 
 
+function customError($errno = 1, $errstr = "!!! ERROR !!!") {
+//   echo "Ending Script";
+        // $valid=[];
+        // $valid[]= "<b>Error:</b> [$errno] $errstr<br>"; 
+        return false;
+        // $this->f3->set('validdb',$valid);;
+        // $this->addDbForm(); 
+}
     // Verbindung testen
     // Create connection
 function show_db ($conn) {
@@ -64,7 +73,7 @@ function close_dbcon ($conn) {
 }
 
 function create_folder ($root,$data) {
-    var_dump ($data);
+    // var_dump ($data);
     // Ordner mit config erzeugen
     $path = $root.'\\formgen\\'.$data['projectname'].'\\config';
     $chmod = 0777;
@@ -80,7 +89,7 @@ function create_folder ($root,$data) {
     } 
     $fp = fopen($path.'\\dbconfig.csv', 'w');
     fputcsv($fp, $data);
-    echo $fp;
+    // echo $fp;
     fclose($fp);
     $source = $root.'\\app\\blueprints\\project';
     $dest = $root.'\\formgen\\'.$data['projectname'];
@@ -92,10 +101,9 @@ function create_folder ($root,$data) {
  * Copy a file, or recursively copy a folder and its contents
  * @author      Aidan Lister <aidan@php.net>
  * @version     1.0.1
- * @link        http://aidanlister.com/2004/04/recursively-copying-directories-in-php/
- * @param       string   $source    Source path
- * @param       string   $dest      Destination path
- * @param       int      $permissions New folder creation permissions
+ * @param       $source     string       Source path
+ * @param       $dest      string   Destination path
+ * @param       $permissions int      New folder creation permissions
  * @return      bool     Returns true on success, false on failure
  */
 function xcopy($source, $dest, $permissions = 0755)
@@ -143,6 +151,7 @@ function xcopy($source, $dest, $permissions = 0755)
 *   @return bool 
 */
 function export_file ($filename,$path,$data,$format='csv') {
+//  echo $filename,$path,$data,$format;
     // Ordner erzeugen
     $chmod = 0777;
     if(!(is_dir($path) OR is_file($path) OR is_link($path) )) { 
@@ -151,29 +160,103 @@ function export_file ($filename,$path,$data,$format='csv') {
     //filename und Exportdatenumwandlung
     switch ($format) {
         case 'ser':
-            $fp = fopen($path.'\\'.$filename.'.ser', 'w');
+            $filename = $filename.'.ser';
             $data_export = serialize ($data);
         break;
         case 'json':
-            $fp = fopen($path.'\\'.$filename.'.json', 'w');
+            $filename = $filename.'.json';
             $data_export = json_encode($data,JSON_PRETTY_PRINT);
+        break;
+        case 'array':
+            $filename = $filename.'.php';
+            $data_export = mkArrayPhpCode($data,'$formConfigAll');
         break;
         default:
             # code...
             break;
     }
     //File schreiben und schließen
+    // echo $filename;
+    $fp = fopen($path.'\\'.$filename, 'w');
     fwrite($fp, $data_export);
     fclose($fp);
-    echo $data_export;
+    // echo $data_export;
     // TODO: Errorhandling 
 	return true;
+}
+
+function mkArrayPhpCode ($data, $name) {
+    $data_export = "<?php\n\n$name = [\n";
+    if (!is_array($data)) {
+        $data_export .= "\"$data\",\n";       
+    } else {
+        foreach ($data as $key => $value) {
+            $data_export .= "\t\"$key\" => ";
+            if (!is_array($value)) {
+                $data_export .= "\"$value\",\n";       
+            } else {
+                $data_export .= "[\n";
+                foreach ($value as $key2 => $value2) {
+                    $data_export .= "\t\t\"$key2\" => ";
+                    if (!is_array($value2)) {
+                        $data_export .= "\"$value2\",\n";       
+                    } else {
+                        $data_export .= "[\n";
+                        foreach ($value2 as $key3 => $value3) {
+                            // echo $key3.' => '.$value3.'\n';
+                            $data_export .= "\t\t\t\"$key3\" =>";
+                            if (!is_array($value3)) {
+                                $data_export .= set_typ($value3).",\n";  
+                            }
+                        }
+                        $data_export .= "\t\t],\n";
+                    }
+                }
+                $data_export .= "\t],\n";
+            }
+        }
+    }
+    $data_export .= "];\n";
+    // echo $data_export;
+    // var_dump($data);
+    return $data_export;
+}
+
+function set_typ ($value) {
+    $vartype = gettype ($value);
+    switch ($vartype) {
+        case 'boolean':
+            $fill = '';
+            $boolval = 'false';
+            if ($value = 1) $boolval = 'true';
+            $retval = $fill.$boolval.$fill;
+            break;
+        case 'integer':
+        case 'double':
+            $fill = '';
+            $retval = $fill.$value.$fill;
+            break;
+        case 'string':
+            $fill = '"';
+            $retval = $fill.$value.$fill;
+            break;
+        default:
+            $fill = '"';
+            break;
+    }
+    return $retval;
 }
 
 function update_db ($dbname) {    
 
 }
 
+/**
+*  Liefert alle Tabellen einer Datenbank als MySqli Objekt
+*  param $conn	mysqli 	MySqliConnection
+*  param $dbname	string	Datenbankname, NULL wird aktive Datenbank genommen oder Fehler
+*  return object    mysqli Object
+*/
 function show_tables ($conn,$dbname = NULL) {
     if (is_null($dbname)) {
         $sql="SELECT database() AS activ_db";
@@ -185,15 +268,14 @@ function show_tables ($conn,$dbname = NULL) {
     }
     $sql="SHOW TABLES FROM ".$dbname;
     if (!($result=mysqli_query($conn,$sql))) {
-    // echo $dbname;
-        // echo $dbname;
         // printf("Error3: %s\n", mysqli_error($conn));
         $valid[]= "Error3: ". $result->error; 
         var_dump ($valid);
-        // $f3->set('validdb',$valid);
-       return false;
+        return false;
     }
-    $tables = $result->fetch_assoc();
-    // echo $tables;
 	return $result;
+}
+
+function insert_table () {
+
 }

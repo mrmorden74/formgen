@@ -42,12 +42,13 @@
     <repeat group="{{ @params.fields }}" key="{{ @field }}" value="{{ @fieldspecs }}">
         <tr>
             <td>
+            <input type="hidden" name="{{ @fieldspecs.id }}[id]" value="{{ @fieldspecs.frmId }}"> 
             <input type="text" class="form-control" id="TblFldName{{ @fieldspecs.id }}" name="{{ @fieldspecs.id }}[tbl_fieldname]" placeholder="Tabellenfeldname" value="{{ @field }}" readonly>
             </td>
             <td>
                 <input type="text" class="form-control" id="FieldName{{ @fieldspecs.id }}" name="{{ @fieldspecs.id }}[fieldname]" placeholder="Formularfeldname" 
                 <check if="{{ @fieldspecs.fieldname != '' }}">
-                    value="{{ @fieldspecs.fieldname }}" readonly
+                    value="{{ @fieldspecs.fieldname }}"
                 </check>
                 >
             </td>
@@ -72,13 +73,16 @@
             <td>
                 <select class="form-control" name="{{ @fieldspecs.id }}[sort]" id ="Sort{{ @fieldspecs.id }}">
                     <option value = "0">auto.</option>
-                    <repeat group="{{ @params.fields }}"  value="{{ @fieldcount }}" counter="{{ @ctr }}"><option>{{ @ctr  }}</option>
+                    <repeat group="{{ @params.fields }}"  value="{{ @fieldcount }}" counter="{{ @ctr }}"><option
+                    <check if="{{ @fieldspecs.sort == @ctr}}"> selected </check>
+                    >{{ @ctr  }}</option>
                     </repeat>
                 </select>
             </td>
             <td>
                 <div class="checkbox"><label><input type="checkbox"  id="Hide{{ @fieldspecs.id }}" name="{{ @fieldspecs.id }}[field_hide]" value="1" 
-                    <check if="{{ @fieldspecs.Null == 'NO' or @fieldspecs.Key == 'PRI' or  @fieldspecs.Key == 'UNI' }}">
+                    <check if="{{ @fieldspecs.field_hide == 1 }}">checked</check>
+                    <check if="{{ (@fieldspecs.Null == 'NO' or @fieldspecs.Key == 'PRI' or  @fieldspecs.Key == 'UNI') && @fieldspecs.Extra != 'auto_increment' }}">
                     onchange="rescue_checkbox_state('Hide{{ @fieldspecs.id }}')"
                     </check>
                 >ausblenden <br></label></div>
@@ -94,8 +98,8 @@
 <table class="table table-striped table-bordered">
   <tr>
       <th class="col-md-3">Spaltenname</th>
-      <th class="col-md-9">Autowertform</th>
-      <th class="col-md-9">Inhalt</th>
+      <th class="col-md-5">Autowertform</th>
+      <th class="col-md-4">Inhalt</th>
   </tr>
     <repeat group="{{ @params.fields }}" key="{{ @field }}" value="{{ @fieldspecs }}">
         <tr>
@@ -116,16 +120,16 @@
                     <option> </option>
                     <repeat group="{{ @fieldspecs.auto }}" key="{{ @count }}" value="{{ @options }}">
                         <option 
-                            <check if="{{ @count == 0 }}">selected</check> 
                             <check if="{{ @fieldspecs.reference }}"> value = "{{ @options }}"</check>
+                            <repeat group="{{ @fieldspecs.autowert }}" key="{{ @idaw }}" value="{{ @valueaw }}"><check if="{{ @valueaw == @options }}">selected</check></repeat>
                         >{{ @options }}</option>
                     </repeat>
                 </select>
             </td>
+            <td></td>
         </tr>
     </repeat>
 </table>
-
   <!-- Tab panes -->
 </div>
     <div role="tabpanel" class="tab-pane" id="messages">
@@ -167,5 +171,5 @@
    <repeat group="{{ @validfrm }}" value="{{ @error }}">
         <p class="error">ERROR {{ filter_var(trim(@error), FILTER_SANITIZE_STRING) }}</p>
     </repeat>
-
+<a href="/showFrms/{{ @params.srvlist_id}}/{{ @params.dbid}}">zurück</a>
 </div>  

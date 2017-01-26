@@ -1,5 +1,8 @@
 <?php
-
+/**
+*   Child class des Controller(f3)
+*   Steuert User Anmeldeprozess
+*/
 class UserController extends Controller {
     function login(){
 
