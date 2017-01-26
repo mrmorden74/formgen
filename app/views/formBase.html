@@ -5,8 +5,7 @@
   <tr>
       <th>Tabellenname</th>
       <th>Formularname</th>
-      <th>Anzahl<br>Tabellenfelder</th>
-      <th>Anzahl<br>Formulfelder</th>
+      <th>Status</th>
       <th>Formulare<br>bearbeiten</th>
   </tr>
     <repeat group="{{ @dataFromDb }}" key="{{ @key }}" value="{{ @db }}">
@@ -25,22 +24,19 @@
             </td>
             <td><input type="text" class="form-control" id="FrmName" name="formname" placeholder="Formularname" 
                 <check if="{{ @db.formname != '' }}">
-                    value="{{ @db.formname }}" readonly
+                    value="{{ @db.formname }}"
                 </check>
                 >
             </td>
-            <td></td>
-            <td></td>
+            <td><p class="form-control-static"><check if="{{ @db.formexist == 1 }}">erstellt<false>offen</false></check></p>
+            </td>
             <td><button type="submit" class="btn btn-default" aria-label="Left Align"><span class="glyphicon 
                 <check if="{{ @db.formname == '' }}">
                         glyphicon-plus green-symb" aria-hidden="true"></span></button></form>
-                    <false> glyphicon-pencil green-symb" aria-hidden="true"></span></button></form>
-                        <button class="btn btn-default" aria-label="Left Align">
-                            <a href="/createFrm/{{ @db.id }}"><span class="glyphicon glyphicon-th-list" aria-hidden="true"></span></a>
-                        </button>
-                        <button class="btn btn-default" aria-label="Left Align">
-                            <a href="/delFrm/{{ @db.id }}/{{ @db.dbid }}/{{ @srvdata.0.id }}"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span></a>
-                        </button>
+                    <false> glyphicon-pencil blue-symb" aria-hidden="true"></span></button></form>
+                            <a href="/createFrm/{{ @db.id }}"><button class="btn btn-default" aria-label="Left Align"><span class="glyphicon glyphicon-th-list green-symb" aria-hidden="true"></span></button></a>
+                            <a href="/delFrm/{{ @db.id }}/{{ @db.dbid }}/{{ @srvdata.0.id }}"><button class="btn btn-default" aria-label="Left Align"><span class="glyphicon glyphicon-minus red-symb" aria-hidden="true"></span></button></a>
+                        
                     </false>
                 </check>
             </td>
@@ -55,11 +51,12 @@
                 <input type="text" class="form-control" id="TblName" name="tablename" placeholder="Tabellenname"></td>
             <td><input type="text" class="form-control" id="FrmName" name="formname" placeholder="Formularname" ></td>
             <td></td>
-            <td></td>
             <td><button type="submit" class="btn btn-default" aria-label="Left Align"><span class="glyphicon glyphicon-plus green-symb" aria-hidden="true"></span></button></td>
         </tr>
 </form>
 </table>
     <repeat group="{{ @validfrm }}" value="{{ @error }}">
         <p class="error">EROOR {{ filter_var(trim(@error), FILTER_SANITIZE_STRING) }}</p>
-    </repeat></div>
+    </repeat>
+<a href="/">zurück</a>
+    </div>

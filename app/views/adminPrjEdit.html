@@ -1,0 +1,18 @@
+<form class="form-horizontal" method="POST" action="/editPrj/{{ @POST.id }}">
+<div class="form-group form-group-border">
+    <h2>Serverdaten bearbeiten</h2>   
+    <label for="DbName">Datenbankname</label>
+    <input type="text" class="form-control" id="DbName" name="dbname" placeholder="Datenbankname" value="{{ @POST.dbname }}">
+    <label for="PrjName">Projektname</label>
+    <input type="text" class="form-control" id="PrjName" name="projectname" placeholder="Projektname" value="{{ @POST.projectname }}">
+    <label for="UserName">Benutzername</label>
+    <input type="text" class="form-control" id="UserName" name="username"  value="{{ @POST.username }}">
+    <label for="Password">Passwort</label>
+    <input type="text" class="form-control" id="Password" name="password"  value="{{ @POST.password }}">
+    <repeat group="{{ @validdb }}" value="{{ @error }}">
+        <p class="error">{{ filter_var(trim(@error), FILTER_SANITIZE_STRING) }}</p>
+    </repeat>
+    <br>
+    <button type="submit" class="btn btn-primary">Speichern</button>
+</div>
+</form>

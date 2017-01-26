@@ -17,7 +17,7 @@ class TblList extends DB\SQL\Mapper{
 	}
 
     public function getByName($name) {
-        $this->load(array('username=?', $name));
+        $this->load(array('tablename=?', $name));
 	    return $this->query;
     }
 

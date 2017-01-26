@@ -26,7 +26,7 @@ class FrmList extends DB\SQL\Mapper{
 	    $this->save();
 	}
 	
-	public function edit($id) {
+	public function edit($id,$it = NULL) {
 	    $this->load(array('id=?',$id));
 	    $this->copyFrom('POST');
 	    $this->update();

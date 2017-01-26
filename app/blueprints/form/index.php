@@ -2,14 +2,15 @@
 // declare(strict_types=1); // Muss die erste Anweisung in einer Datei sein
 // includes
 require_once '../inc/utilities.inc.php';
-// require_once '../inc/formconfig.inc.php';
+$titel = getTitel();
+require_once './'.$titel.'.php';
 require_once '../inc/db-connect.inc.php';
+require_once '../inc/cryptor.php';
 // zur DB verbinden
 $dbcon = getConDb();
 $db = connectDB($dbcon['user'], $dbcon['pw'], $dbcon['host'], $dbcon['db']);
 // Initialisierung
-$titel = getTitel();
-$formConfigAll = getFormConfig($titel);
+
 $formConfig = $formConfigAll['fields'];
 $isSent = false;
 $isAdded = false;
@@ -36,6 +37,7 @@ if ($isSent) {
 					$_POST[$key]=''; // Formular löschen für weiteren Datensatz
 				}
 			} elseif ($db->error != '') {
+				echo 'TEST';
 				$errorMsg = $db->error;
 			}
 		}
@@ -62,14 +64,18 @@ if ($isSent) {
 	<!--<link rel="stylesheet" href="../css/pure-min.css">-->
 	<link rel="stylesheet" href="../css/bootstrap.min.css">
 	<link rel="stylesheet" href="../css/layout.css">
-	<script src="../inc/myScript.js"></script>
+	<link rel="stylesheet" href="../css/custom.css">
+	<link rel="stylesheet" href="../css/jquery.simple-dtpicker.css">
 </head>
 <body>
-<div class="container">
-	<header class="main-header">
-		<h1><?= $formConfigAll['frmname'] ?></h1>
+	<header>
+		<div class="container-fluid">
+			<div class="container">
+				<h1><?= $formConfigAll['frmname'] ?>
+			</h1>
+			</div>
+		</div>
 	</header>
-</div>
 	<main>
 
 <?php
@@ -99,7 +105,12 @@ if (isset($_GET['edit'])) {
 	<!--<a href="html/index.html">Projektdokumentation per Doxygen</a>-->
 	<a href="../index.php">zum Index</a>
 </footer>
-<script src="../inc/jquery-3.1.1.min.js"></script>
-<script src="../inc/bootstrap.min.js"></script>
+<script src="../js/myScript.js"></script>
+<script src="../js/jquery-3.1.1.min.js"></script>
+<script src="../js/bootstrap.min.js"></script>
+<script src="../js/jquery.simple-dtpicker.js"></script>
+<?php
+echo $script;
+?>
 </body>
 </html>

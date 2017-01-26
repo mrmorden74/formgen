@@ -2,20 +2,20 @@
 <div class="form-group form-group-border">
     <h2>Neue Datenbank anlegen/registrieren</h2>   
     <label for="Server">Server</label>
-    <input type="text" class="form-control" id="Server" name="server" placeholder="Server">
+    <input type="text" class="form-control" id="Server" name="server" placeholder="Server" value="{{ @POST.server}}">
     <label for="UserName">Benutzername</label>
-    <input type="text" class="form-control" id="UserName" name="username" placeholder="Benutzername">
+    <input type="text" class="form-control" id="UserName" name="username" placeholder="Benutzername" value="{{ @POST.username}}">
     <label for="DbPassword">Passwort</label>
-    <input type="password" class="form-control" id="DbPassword" name="password" placeholder="Passwort">
+    <input type="password" class="form-control" id="DbPassword" name="password" placeholder="Passwort" value="{{ @POST.password}}">
     <label for="SrvType">Datenbanktyp</label>    
-    <select class="form-control" name="srvtype" id="SrvType">
+    <select class="form-control" name="srvtype" id="SrvType" value="{{ @POST.srvtype}}">
         <option>MySql</option>
         <option disabled>PostgreSQL</option>
         <option disabled>OCl8</option>
         <option disabled>SQLite</option>
         <option disabled>MongoDB</option>
     </select>
-    <repeat group="{{ @validdb }}" value="{{ @error }}">
+    <repeat group="{{ @validsrv }}" value="{{ @error }}">
         <p class="error">{{ filter_var(trim(@error), FILTER_SANITIZE_STRING) }}</p>
     </repeat>
     <br>

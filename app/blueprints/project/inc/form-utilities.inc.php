@@ -1,3 +1,4 @@
+<?php
 /**
 *	Fügt Formularfelder die im Array $conf mitgegebn werden ein und blendet Valiedierungsfehler aus $errors ein
 *	@param $conf array

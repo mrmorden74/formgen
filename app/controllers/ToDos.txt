@@ -3,13 +3,29 @@ Struktur
 Initialisierung
     time delay beim Erstellen der Datenbank
 Projektauswahl
-    Anzahl Formulare
-    edit und delete 
-Projekte
-    edit der Projektnamen
-    Anzahl Tabellenfelder - zu streichen?
-    Anzahl Formularfelder - zu streichen?
+    edit und delete -> nur Admin
 Formularauswahl
+    Edit
     Tabelle erstellen
+Formulardefinition
+    Felder hinzufügen
+    Alter Table
+    editable - Ausgefüllte Felder können nicht editiert werden
+    Autowertform
+        autoincrement
+        Autowert    Inhalt Wert
+        LinkTable [tables]  Inhalt fields
+    Eingabeformat
+        PopUpAnleitung
+        String
+            "" Fixe Texte - Prefix,Postfix
+            0 Zahlen
+            1 Zahlen>0
+            ? Buchstaben
+            * zeichen
+            minX,maxX, minValX, maxValX
+            
+Generierte Formulare
+Layout
 
 
