@@ -1,13 +1,13 @@
+Allgemein
+    Browserunterstützung
 Struktur
     config files hinausverlagern
 Initialisierung
     time delay beim Erstellen der Datenbank
-Projektauswahl
-    edit und delete -> nur Admin
 Formularauswahl
-    Edit
     Tabelle erstellen
 Formulardefinition
+    Nicht editierbare Felder zu Texteinblendungen ändern
     Felder hinzufügen
     Alter Table
     editable - Ausgefüllte Felder können nicht editiert werden
@@ -24,8 +24,7 @@ Formulardefinition
             ? Buchstaben
             * zeichen
             minX,maxX, minValX, maxValX
-            
 Generierte Formulare
-Layout
+    Layout
 
 
