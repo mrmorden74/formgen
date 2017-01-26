@@ -1,8 +1,8 @@
 <?php
-/*
-	Diverse Hilfsfunktionen
+/**
+*	Diverse Hilfsfunktionen
 */
-
+$script = '';
 /**
 *	Ordnername wird als Titel ausgelesen
 *   @return string 
@@ -111,20 +111,42 @@ function makeFormField($fieldName, $fieldConf, $type, $error = NULL) {
 			$formField .= makeFormFieldOptions($fieldName, $fieldConf, $type);
 			$formField .=  '</select>';
 			break;
+		case 'date':
+		case 'datetime':
+			$formField .=  '<div class="form-group">';
+			$formField .= makeFormFieldLabel($fieldName, $fieldConf);
+			$formField .= makeFormFieldPrefix($fieldName, $fieldConf);
+			$fieldId = 'datetimepicker'.$fieldConf["dbName"];
+			$formField .= '<div class="input-group date" id="'.$fieldId.'">';
+			$formField .= makeFormFieldInput($fieldName, $fieldConf, $type, $error);
+			$formField .=  '</div></div>'	;
+			mkDateTimePickerScript($fieldName);
+			break;
 		case 'text':
 		case 'number':
-		case 'date':
 		default:
 			$formField .=  '<div class="form-group">';
 			$formField .= makeFormFieldLabel($fieldName, $fieldConf);
 			$formField .= makeFormFieldPrefix($fieldName, $fieldConf);
 			$formField .= makeFormFieldInput($fieldName, $fieldConf, $type, $error);
-			$formField .=  '</div>'	;
+			$formField .=  '</div></div>';
 			break;
 	}
 	return $formField;
 }
 
+function mkDateTimePickerScript($fieldID) {
+	global $script;
+  	$script .= '<script type="text/javascript">
+			$(function(){
+				$(\'*[name='.$fieldID.']\').appendDtpicker({
+					"inline": true,
+					"locale": "de"
+				});
+			});
+		</script>';
+
+}
 /**
 *	Geneiert die Optionen für Select Box
 *	@param $fieldName string Formularfeldname
@@ -217,7 +239,13 @@ function makeFormFieldPrefix($fieldName, $fieldConf) {
 *	@return string Input String
 */
 function makeFormFieldInput($fieldName, $fieldConf, $type, $error = NULL) {
-		$input = '<input type="'.$fieldConf['fieldType'].'"'; // Art des EIngabefeldes
+		$input = '<input type="';
+		if ($fieldConf['fieldType'] == 'datetime') {
+			$input .= 'text';
+		} else {
+			$input .= $fieldConf['fieldType'];
+		}
+		$input .= '"'; // Art des EIngabefeldes
 		$input .= ' class="form-control" '; // CSS 
 		$input .= ' name="'.$fieldName.'" id="'.$fieldName.'"'; // (Variablen-)name des Eingabefeldes
 	if (isset($fieldConf['placeholder'])) {
@@ -238,7 +266,11 @@ function makeFormFieldInput($fieldName, $fieldConf, $type, $error = NULL) {
 		$input .= ' readonly'; // Nicht editierbar
 	}
 		$input .=  '>'	;
-
+	if ($fieldConf['dataType'] == 'datetime') {
+		$input .=  '<span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>';
+	}	
 	return $input;
 }
 
@@ -252,7 +284,7 @@ function makeFormFieldInput($fieldName, $fieldConf, $type, $error = NULL) {
 function makeFormFieldValue($fieldName, $fieldConf, $type) {
 	$value = '';
 	if (count($_POST)>0 && !validate_empty($_POST[$fieldName])) {
-		$value = $_POST[$fieldName]; // Fügt bereits eingegeben Wert nach POST ein (unabhängig der Gültigkeit)
+		$value = frm_korr_value($fieldName, $fieldConf); // Fügt bereits eingegeben Wert nach POST ein (unabhängig der Gültigkeit)
 		if ($type == 'update' && isset($fieldConf['preFix'])) {
 					$value = str_replace($fieldConf['preFix'], '' ,$value);
 		}	
@@ -625,12 +657,65 @@ function sql_insert($confall) {
 			if (isset($fieldConf['preFix'])) {
 		$sql .= $fieldConf['preFix'];
 			} 
-		$sql .= $_POST[$fieldName] . '"';	
+		$sql .= sql_korr_value($fieldName, $fieldConf) . '"';	
 		// $sql .= utf8_encode($_POST[$fieldName]) . '"';	
 		$komma = ", ";
 	}
 	$sql .= ';';
 	return $sql;			
+}
+
+/**
+*	Korrigiert Anzeige Werte zu Datenbankwerten, wenn notwendig
+*	@param $fieldName string 	Feldname
+*	@param $fieldConf array 	Feldkonfiguration
+*	@return string Datumswert im SQL Format JJJJ-MM-TT hh.mm.ss
+*/
+function sql_korr_value($fieldName, $fieldConf) {
+	$value = $_POST[$fieldName];
+	if ($fieldConf['dataType'] == 'datetime') {
+		$datetime = explode(" ",$value);
+		$date = explode(".",$datetime[0]);
+		$value = $date['2'].'-'.$date['1'].'-'.$date['0'].' '.$datetime[1];
+	}
+	
+	return $value;
+}
+
+/**
+*	Korrigiert Datenbankwerten zu Anzeige Werte , wenn notwendig
+*	@param $key string 	Feldname
+*	@param $val string 	Feldwert
+*	@param $fieldConf array 	Feldkonfiguration
+*	@return string Datumswert im Anzeigeformat TT.MM.JJJJ hh.mm.ss
+*/
+function getVal($key, $val, $fieldConf) {
+	$value = $val;
+	if ($fieldConf['dataType'] == 'datetime') {
+		$datetime = explode(" ",$value);
+		$date = explode("-",$datetime[0]);
+		$value = $date['2'].'.'.$date['1'].'.'.$date['0'].' '.$datetime[1];
+	}
+	
+	return $value;
+	}
+
+
+/**
+*	Korrigiert Datenbankwerten zu Anzeige Werte , wenn notwendig
+*	@param $fieldName string 	Feldname
+*	@param $fieldConf array 	Feldkonfiguration
+*	@return string Datumswert im Anzeigeformat TT.MM.JJJJ hh.mm.ss
+*/
+function frm_korr_value($fieldName, $fieldConf) {
+	$value = $_POST[$fieldName];
+	if ($fieldConf['dataType'] == 'datetime') {
+		$datetime = explode(" ",$value);
+		$date = explode("-",$datetime[0]);
+		$value = $date['2'].'.'.$date['1'].'.'.$date['0'].' '.$datetime[1];
+	}
+	
+	return $value;
 }
 
 /**
@@ -650,7 +735,7 @@ function sql_update($confall) {
 			if (isset($fieldConf['preFix'])) {
 		$sql .= $fieldConf['preFix'];
 			} 
-		$sql .= $_POST[$fieldName] . '"';	
+		$sql .= sql_korr_value($fieldName, $fieldConf) . '"';	
 		// $sql .= utf8_encode($_POST[$fieldName]) . '"';	
 		$komma = ", ";
 	}

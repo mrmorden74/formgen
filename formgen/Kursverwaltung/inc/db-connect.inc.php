@@ -8,7 +8,8 @@
 *
 */
 function connectDB(string $user, string $pw, string $host, string $db) : mysqli {
-	
+
+	$pw = decrypt($pw);	
 	// echo 'connect: ', $user,'-', $pw,'-', $host,'-', $db;
 	$mysqli = new mysqli($host, $user, $pw, $db);
 	// var_dump($mysqli->connect_errno);
@@ -71,4 +72,25 @@ function getDbId() {
  return $string[7];
 }
 
+    /**
+    *  Verschlüsselt $token mit vorgebenen ENCRYPTION_KEY.
+    *  twoway encryption
+    *  param    $token  string  Zu verschlüsselnder String
+    *  return   string  verschlüsselter Token
+    */
+function encrypt($token) {
+	$cryptor = new Cryptor("'CKXH2U9RPY3EFD70TLS1ZG4N8WQBOVI6AMJ5';");
+	return $cryptor->encrypt($token);
+}
+
+    /**
+    *  Entschlüsselt $token mit vorgebenen ENCRYPTION_KEY.
+    *  twoway encryption
+    *  param    $token  string  verschlüsselter String
+    *  return   string  entschlüsselter Token
+    */
+function decrypt($crypted_token) {
+	$cryptor = new Cryptor("'CKXH2U9RPY3EFD70TLS1ZG4N8WQBOVI6AMJ5';");
+	return $cryptor->decrypt($crypted_token);
+}
 ?>

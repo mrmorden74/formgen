@@ -667,8 +667,9 @@ function sql_insert($confall) {
 
 /**
 *	Korrigiert Anzeige Werte zu Datenbankwerten, wenn notwendig
-*	@param $confall array
-*	@return string sql-Statement
+*	@param $fieldName string 	Feldname
+*	@param $fieldConf array 	Feldkonfiguration
+*	@return string Datumswert im SQL Format JJJJ-MM-TT hh.mm.ss
 */
 function sql_korr_value($fieldName, $fieldConf) {
 	$value = $_POST[$fieldName];
@@ -683,8 +684,10 @@ function sql_korr_value($fieldName, $fieldConf) {
 
 /**
 *	Korrigiert Datenbankwerten zu Anzeige Werte , wenn notwendig
-*	@param $confall array
-*	@return string sql-Statement
+*	@param $key string 	Feldname
+*	@param $val string 	Feldwert
+*	@param $fieldConf array 	Feldkonfiguration
+*	@return string Datumswert im Anzeigeformat TT.MM.JJJJ hh.mm.ss
 */
 function getVal($key, $val, $fieldConf) {
 	$value = $val;
@@ -700,8 +703,9 @@ function getVal($key, $val, $fieldConf) {
 
 /**
 *	Korrigiert Datenbankwerten zu Anzeige Werte , wenn notwendig
-*	@param $confall array
-*	@return string sql-Statement
+*	@param $fieldName string 	Feldname
+*	@param $fieldConf array 	Feldkonfiguration
+*	@return string Datumswert im Anzeigeformat TT.MM.JJJJ hh.mm.ss
 */
 function frm_korr_value($fieldName, $fieldConf) {
 	$value = $_POST[$fieldName];
