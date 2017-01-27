@@ -129,7 +129,7 @@ function makeFormField($fieldName, $fieldConf, $type, $error = NULL) {
 			$formField .= makeFormFieldLabel($fieldName, $fieldConf);
 			$formField .= makeFormFieldPrefix($fieldName, $fieldConf);
 			$formField .= makeFormFieldInput($fieldName, $fieldConf, $type, $error);
-			$formField .=  '</div></div>';
+			$formField .=  '</div>';
 			break;
 	}
 	return $formField;

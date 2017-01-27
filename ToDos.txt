@@ -1,9 +1,12 @@
 Allgemein
     Browserunterstützung
+
 Struktur
     config files hinausverlagern
 Initialisierung
     time delay beim Erstellen der Datenbank
+    sql srv_list password darf NULL
+    sql inklusive kurse-Kursverwaltung
 Formularauswahl
     Tabelle erstellen
 Formulardefinition
