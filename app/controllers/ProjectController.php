@@ -461,6 +461,8 @@ class ProjectController extends Controller {
             // echo $key.'='.$value.'<br>';
             $_POST = NULL;
             if(is_array($value)) {
+                echo 'test';
+                var_dump($value);
                 if($value['id']) {
                     $_POST['id'] = $value['id'];
                 }
@@ -484,7 +486,7 @@ class ProjectController extends Controller {
                     // var_dump($_POST);
                     $form->edit($value['id']);
                 } else {
-                    $form->save();
+                    $form->add();
                 }
                 $form->reset();
             }
@@ -519,6 +521,10 @@ class ProjectController extends Controller {
                 }
             }
         }
+        // formexist in Tbl setzen
+        $_POST = NULL;
+        $_POST['formexist'] = 1;
+        $tbl->edit($params['id']); 
 
         $root = $this->f3->get('ROOT');
         $path = $root.'\\formgen\\'.$datadb[0]['projectname'].'\\'.$datatbl[0]['formname'];

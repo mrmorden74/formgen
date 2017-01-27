@@ -224,7 +224,7 @@ function makeFormFieldLabel($fieldName, $fieldConf) {
 */
 function makeFormFieldPrefix($fieldName, $fieldConf) {
 	$prefix = '';
-	if (isset($fieldConf['preFix'])){
+	if ($fieldConf['preFix'] != ""){
 		$prefix .= '<div class="align-left">'.$fieldConf['preFix'].'</div>';		
 	}
 	return $prefix;
@@ -240,7 +240,9 @@ function makeFormFieldPrefix($fieldName, $fieldConf) {
 */
 function makeFormFieldInput($fieldName, $fieldConf, $type, $error = NULL) {
 		$input = '<input type="';
-		if ($fieldConf['fieldType'] == 'datetime') {
+		if ($fieldConf['fieldType'] == 'datetime' ||
+			$fieldConf['fieldType'] == 'timestamp' ||
+			$fieldConf['fieldType'] == 'date' ) {
 			$input .= 'text';
 		} else {
 			$input .= $fieldConf['fieldType'];
@@ -248,16 +250,16 @@ function makeFormFieldInput($fieldName, $fieldConf, $type, $error = NULL) {
 		$input .= '"'; // Art des EIngabefeldes
 		$input .= ' class="form-control" '; // CSS 
 		$input .= ' name="'.$fieldName.'" id="'.$fieldName.'"'; // (Variablen-)name des Eingabefeldes
-	if (isset($fieldConf['placeholder'])) {
+	if ($fieldConf['placeholder'] != "") {
 		$placeholder = $fieldConf['placeholder'];
-	} elseif (isset($fieldConf['label'])) {
+	} elseif ($fieldConf['label'] != "") {
 		$placeholder = $fieldConf['label'];
 	}
 		$input .= ' placeholder="'.$placeholder.'"'; // Optinale Verwendung des Platzhalters
 			
 	// echo count($_POST);
 	
-		$input .= ' value="' . makeFormFieldValue($fieldName, $fieldConf, $type) . '"';
+		$input .= makeFormFieldValue($fieldName, $fieldConf, $type);
 
 	if (isset($error)) {
 		$input .= ' class="error"'; // Formatiert den Text im EIngabefeld nach Fehler rot
@@ -286,11 +288,11 @@ function makeFormFieldValue($fieldName, $fieldConf, $type) {
 	if (count($_POST)>0 && !validate_empty($_POST[$fieldName])) {
 		$value = frm_korr_value($fieldName, $fieldConf); // Fügt bereits eingegeben Wert nach POST ein (unabhängig der Gültigkeit)
 		if ($type == 'update' && isset($fieldConf['preFix'])) {
-					$value = str_replace($fieldConf['preFix'], '' ,$value);
+					$value =  ' value="'.str_replace($fieldConf['preFix'], '' ,$value).'"';
 		}	
 	} elseif (isset($fieldConf['autoValue']) && $fieldConf['autoValue'] != "") {
 		// autoWert generieren
-		$value = getAutowert($fieldName, $fieldConf); // Generiert einen Autowert 
+		$value = ' value="'.getAutowert($fieldName, $fieldConf).'"'; // Generiert einen Autowert 
 	}
 	return $value;
 }
@@ -673,7 +675,9 @@ function sql_insert($confall) {
 */
 function sql_korr_value($fieldName, $fieldConf) {
 	$value = $_POST[$fieldName];
-	if ($fieldConf['dataType'] == 'datetime') {
+	if ($fieldConf['dataType'] == 'datetime' ||
+		$fieldConf['dataType'] == 'timestamp' ||
+		$fieldConf['dataType'] == 'date' ) {
 		$datetime = explode(" ",$value);
 		$date = explode(".",$datetime[0]);
 		$value = $date['2'].'-'.$date['1'].'-'.$date['0'].' '.$datetime[1];
@@ -691,10 +695,16 @@ function sql_korr_value($fieldName, $fieldConf) {
 */
 function getVal($key, $val, $fieldConf) {
 	$value = $val;
-	if ($fieldConf['dataType'] == 'datetime') {
+	if ($fieldConf['dataType'] == 'datetime' ||
+		$fieldConf['dataType'] == 'timestamp' ||
+		$fieldConf['dataType'] == 'date') {
 		$datetime = explode(" ",$value);
 		$date = explode("-",$datetime[0]);
-		$value = $date['2'].'.'.$date['1'].'.'.$date['0'].' '.$datetime[1];
+		$time = '';
+		if (count($datetime)>1) {
+			$time = $datetime[1];
+		}
+		$value = $date['2'].'.'.$date['1'].'.'.$date['0'].' '. $time;
 	}
 	
 	return $value;
@@ -709,10 +719,16 @@ function getVal($key, $val, $fieldConf) {
 */
 function frm_korr_value($fieldName, $fieldConf) {
 	$value = $_POST[$fieldName];
-	if ($fieldConf['dataType'] == 'datetime') {
+	if ($fieldConf['dataType'] == 'datetime' ||
+		$fieldConf['dataType'] == 'timestamp' ||
+		$fieldConf['dataType'] == 'date') {
 		$datetime = explode(" ",$value);
 		$date = explode("-",$datetime[0]);
-		$value = $date['2'].'.'.$date['1'].'.'.$date['0'].' '.$datetime[1];
+		$time = '';
+		if (count($datetime)>1) {
+			$time = $datetime[1];
+		}
+		$value = $date['2'].'.'.$date['1'].'.'.$date['0'].' '. $time;
 	}
 	
 	return $value;
