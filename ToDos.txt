@@ -1,15 +1,17 @@
 Allgemein
     Browserunterstützung
-
 Struktur
     config files hinausverlagern
 Initialisierung
     time delay beim Erstellen der Datenbank
     sql srv_list password darf NULL
     sql inklusive kurse-Kursverwaltung
+Projektliste
+    export der alternativen Zugangsdaten
 Formularauswahl
     Tabelle erstellen
 Formulardefinition
+    Umlaute
     Nicht editierbare Felder zu Texteinblendungen ändern
     Felder hinzufügen
     Alter Table
@@ -27,7 +29,10 @@ Formulardefinition
             ? Buchstaben
             * zeichen
             minX,maxX, minValX, maxValX
+    Formular löschen inkl. Dateien
 Generierte Formulare
     Layout
+    Date ohne Time
+    Select ink. Referenz
 
 

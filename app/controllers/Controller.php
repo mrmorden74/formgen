@@ -32,17 +32,9 @@ class Controller {
     }
     function afterroute() {
         // echo ' - After routing';
-	// echo $pw = '45f91fed2b6c8e280dd89935de003b3eKQ==';
-	// echo 'PASSWORT_verschlüsselt:'.$pw.'<br>';
-	// echo mb_detect_encoding($pw).'<br>';
-	// $pw = mb_convert_encoding($pw, "UTF-8", "ASCII");
-	// echo 'PASSWORT_verschlüsselt:'.$pw.'<br>';
-	// echo mb_detect_encoding($pw).'<br>';
-	// $pw = $this->decrypt($pw);	
-	// echo 'PASSWORT:'.$pw.'<br>';
-	// echo mb_detect_encoding($pw).'<br>';
-	
-		var_dump($this->f3);
+		if ($this->f3->get('DEBUG')>0) {
+			var_dump($this->f3);
+		}
     }
 
 	function __construct() {

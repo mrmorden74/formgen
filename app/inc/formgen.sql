@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Erstellungszeit: 18. Jan 2017 um 17:23
+-- Erstellungszeit: 28. Jan 2017 um 14:16
 -- Server-Version: 5.7.14
 -- PHP-Version: 7.0.10
 
@@ -17,7 +17,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Datenbank: `formgen2`
+-- Datenbank: `formgen`
 --
 
 -- --------------------------------------------------------
@@ -31,14 +31,9 @@ CREATE TABLE `dblist` (
   `srvlist_id` int(11) NOT NULL,
   `dbname` varchar(255) NOT NULL,
   `username` varchar(55) DEFAULT NULL,
-  `password` varchar(55) DEFAULT NULL,
+  `password` varchar(255) DEFAULT NULL,
   `projectname` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Daten für Tabelle `dblist`
---
-
 
 -- --------------------------------------------------------
 
@@ -59,11 +54,6 @@ CREATE TABLE `frmlist` (
   `sort` varchar(9) NOT NULL,
   `field_hide` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Daten für Tabelle `frmlist`
---
-
 
 -- --------------------------------------------------------
 
@@ -103,13 +93,8 @@ CREATE TABLE `srvlist` (
   `server` varchar(255) NOT NULL,
   `srvtype` varchar(55) NOT NULL,
   `username` varchar(55) NOT NULL,
-  `password` varchar(55) NOT NULL
+  `password` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Daten für Tabelle `srvlist`
---
-
 
 -- --------------------------------------------------------
 
@@ -125,11 +110,6 @@ CREATE TABLE `tablelist` (
   `formname` varchar(255) DEFAULT NULL,
   `formexist` tinyint(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Daten für Tabelle `tablelist`
---
-
 
 -- --------------------------------------------------------
 
@@ -218,12 +198,12 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT für Tabelle `dblist`
 --
 ALTER TABLE `dblist`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=62;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=101;
 --
 -- AUTO_INCREMENT für Tabelle `frmlist`
 --
 ALTER TABLE `frmlist`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1758;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2375;
 --
 -- AUTO_INCREMENT für Tabelle `privilegies`
 --
@@ -233,17 +213,17 @@ ALTER TABLE `privilegies`
 -- AUTO_INCREMENT für Tabelle `srvlist`
 --
 ALTER TABLE `srvlist`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 --
 -- AUTO_INCREMENT für Tabelle `tablelist`
 --
 ALTER TABLE `tablelist`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 --
 -- AUTO_INCREMENT für Tabelle `user`
 --
 ALTER TABLE `user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 --
 -- Constraints der exportierten Tabellen
 --

@@ -24,8 +24,10 @@ class AdminController extends Controller {
         $this->f3->set('content','admin.html');
         $this->f3->set('admin_tool','adminUserEdit.html');
         echo $template->render('base.html');
-        // var_dump($db);
- 
+        //DEBUG
+        if ($this->f3->get('DEBUG')>0) {
+            // var_dump($db);
+        }
     }
 
     /**
@@ -48,8 +50,10 @@ class AdminController extends Controller {
         $this->f3->set('content','admin.html');
         $this->f3->set('admin_tool','adminSrvEdit.html');
         echo $template->render('base.html');
-        // var_dump($db);
- 
+        //DEBUG
+        if ($this->f3->get('DEBUG')>0) {
+            // var_dump($db);
+        }
     }    
 
     /**
@@ -250,7 +254,10 @@ class AdminController extends Controller {
         $this->f3->set('content','admin.html');
         $this->f3->set('admin_tool','adminSrvBase.html');
         echo $template->render('base.html');
-        // var_dump($db);    
+        //DEBUG
+        if ($this->f3->get('DEBUG')>0) {
+            // var_dump($db);    
+        }
     }
     
     /**
@@ -285,7 +292,6 @@ class AdminController extends Controller {
         $this->f3->set('content','admin.html');
         $this->f3->set('admin_tool','adminSrvAdd.html');
         echo $template->render('base.html');
-        // var_dump($this->f3);
     }
 
     /**
@@ -496,8 +502,12 @@ class AdminController extends Controller {
         $this->f3->set('content','admin.html');
         $this->f3->set('admin_tool','adminPrjEdit.html');
         echo $template->render('base.html');
-        // var_dump($db);
-    } 
+        //DEBUG
+        if ($this->f3->get('DEBUG')>0) {
+            // var_dump($db);
+        }
+    }
+
     /** 
     *  TODO:  Edit Projekt
     *  Validiert und speichert geänderte Projektdaten.

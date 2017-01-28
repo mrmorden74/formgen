@@ -64,8 +64,11 @@ class ProjectController extends Controller {
             $this->f3->set('header','header.html');
             $this->f3->set('content','projectBase.html');
             echo $template->render('base.html');
-        var_dump($srvname);
-        var_dump($data);    
+        //DEBUG
+        if ($this->f3->get('DEBUG')>0) {
+            var_dump($srvname);
+            var_dump($data);    
+        }
     }   
     
     /**
@@ -178,9 +181,11 @@ class ProjectController extends Controller {
         $this->f3->set('content','formBase.html');
         echo $template->render('base.html');
         //DEBUG
-        echo '$tables';
-        var_dump($tables);
-        var_dump($datafrm);    
+        if ($this->f3->get('DEBUG')>0) {
+            echo '$tables';
+            var_dump($tables);
+            var_dump($datafrm);    
+        }
     }
 
     /**
@@ -217,7 +222,7 @@ class ProjectController extends Controller {
     */    
     function editFrm () {
         $data = $this->f3->get('POST');
-        var_dump($_POST);
+        // var_dump($_POST);
         $valid = Validate::is_valid($data, array(
             'tablename' => 'required|alpha_dash',
             'formname' => 'required|alpha_dash',
@@ -243,7 +248,7 @@ class ProjectController extends Controller {
     *  return reroute	showFrms
     */ 
     function delFrm ($f3,$params) {
-        var_dump($params);
+        // var_dump($params);
         $tbl = new TblList($this->db);
         $tbl->delete($params['id']);
         $this->f3->reroute('/showFrms/'.$params['srvid'].'/'.$params['dbid']);
@@ -405,6 +410,7 @@ class ProjectController extends Controller {
         $this->f3->set('content','formFields.html');
         echo $template->render('base.html');
         //DEBUG
+        if ($this->f3->get('DEBUG')>0) {
             ini_set('xdebug.var_display_max_depth', '10');
             echo '$datadb';
             var_dump($datadb);
@@ -412,7 +418,7 @@ class ProjectController extends Controller {
             var_dump($datafrm[4]);
             echo '$object';
             var_dump($object);
-
+        }
         /* TODO: add Field
         */
 
@@ -533,7 +539,7 @@ class ProjectController extends Controller {
         export_file ($filename,$path,$export,$format);
         $source = $root.'\\app\\blueprints\\form';
         // TODO: wieder aktivieren DEBUG
-        var_dump($_POST);
+        // var_dump($_POST);
         $files = xcopy($source, $path);
         $this->f3->reroute('/createFrm/'.$params['id']);
     }
